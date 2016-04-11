@@ -66,7 +66,7 @@ public abstract class ScanExecutor {
 			throw new IllegalArgumentException("No Hub password provided.");
 		}
 		if (scanTargets == null || scanTargets.isEmpty()) {
-			throw new IllegalArgumentException("No scan targets provided.");
+			throw new IllegalArgumentException("No scan targets provided. ");
 		}
 		if (buildNumber == null) {
 			throw new IllegalArgumentException("No build number provided.");
