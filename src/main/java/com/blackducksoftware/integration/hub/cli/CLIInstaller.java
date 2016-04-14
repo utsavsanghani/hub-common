@@ -46,11 +46,14 @@ import com.blackducksoftware.integration.hub.HubSupportHelper;
 import com.blackducksoftware.integration.hub.exception.BDRestException;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.logging.IntLogger;
+import com.blackducksoftware.integration.hub.logging.NullLogger;
 
 public class CLIInstaller {
 	public static final String VERSION_FILE_NAME = "hubVersion.txt";
 
 	public static final String CLI_UNZIP_DIR = "Hub_Scan_Installation";
+
+	public static final String LOCKED_FILE_NAME = ".locked";
 
 	private final File directoryToInstallTo;
 
@@ -134,316 +137,271 @@ public class CLIInstaller {
 	}
 
 	public void performInstallation(final IntLogger logger, final HubIntRestService restService, final String localHostName) throws IOException,
-	InterruptedException, BDRestException, URISyntaxException, HubIntegrationException {
+	BDRestException, URISyntaxException, HubIntegrationException, InterruptedException {
 		if (StringUtils.isBlank(localHostName)) {
 			throw new IllegalArgumentException("You must provided the hostName of the machine this is running on.");
 		}
 
 		final String cliDownloadUrl = getCLIDownloadUrl(logger, restService);
 		if (StringUtils.isNotBlank(cliDownloadUrl)) {
-			customInstall(new URL(cliDownloadUrl), restService.getHubVersion(), localHostName, logger);
-		} else {
-			logger.error("Could not find the correct Hub CLI download URL.");
-		}
-
-	}
-
-	public String getCLIDownloadUrl(final IntLogger logger, final HubIntRestService restService) throws IOException, InterruptedException {
-
-		try {
-			final HubSupportHelper hubSupport = new HubSupportHelper();
-
-			hubSupport.checkHubSupport(restService, logger);
-
-			if (SystemUtils.IS_OS_MAC_OSX && hubSupport.isJreProvidedSupport()) {
-				return HubSupportHelper.getOSXCLIWrapperLink(restService.getBaseUrl());
-			} else if (SystemUtils.IS_OS_WINDOWS && hubSupport.isJreProvidedSupport()) {
-				return HubSupportHelper.getWindowsCLIWrapperLink(restService.getBaseUrl());
-			} else {
-				return HubSupportHelper.getLinuxCLIWrapperLink(restService.getBaseUrl());
+			final File lockedFile = new File(getDirectoryToInstallTo(), LOCKED_FILE_NAME);
+			while (lockedFile.exists()) {
+				Thread.sleep(10000);
 			}
-		} catch (final URISyntaxException e) {
-			logger.error(e.getMessage(), e);
-		}
-		return null;
-
-	}
-
-	private boolean customInstall(final URL archive, String hubVersion, final String localHostName, final IntLogger logger) throws IOException, InterruptedException,
-	HubIntegrationException {
-
-		try {
-			if (!directoryToInstallTo.exists() && !directoryToInstallTo.mkdirs()) {
-				throw new HubIntegrationException("Could not create the directory : " + directoryToInstallTo.getCanonicalPath());
-			}
-
-			boolean cliMismatch = true;
-			// For some reason the Hub returns the Version inside quotes
-			hubVersion = hubVersion.replace("\"", "");
-			final File hubVersionFile = new File(directoryToInstallTo, VERSION_FILE_NAME);
-			if (hubVersionFile.exists()) {
-				final String storedHubVersion = IOUtils.toString(new FileInputStream(hubVersionFile));
-				if (hubVersion.equals(storedHubVersion)) {
-					cliMismatch = false;
-				} else {
-					hubVersionFile.delete();
-				}
-			}
-			if (cliMismatch) {
-				hubVersionFile.createNewFile();
-				final FileWriter writer = new FileWriter(hubVersionFile);
-				writer.write(hubVersion);
-				writer.close();
-			}
-			URLConnection connection = null;
+			lockedFile.createNewFile();
 			try {
-				Proxy proxy = null;
+				customInstall(new URL(cliDownloadUrl), restService.getHubVersion(), localHostName, logger);
+			} finally {
+				lockedFile.delete();
+			}
+	} else {
+		logger.error("Could not find the correct Hub CLI download URL.");
+	}
 
-				if (StringUtils.isNotBlank(proxyHost)) {
-					proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
-				}
-				if (proxy != null) {
+}
 
-					if (StringUtils.isNotBlank(proxyUserName) && StringUtils.isNotBlank(proxyPassword)) {
-						Authenticator.setDefault(
-								new Authenticator() {
-									@Override
-									public PasswordAuthentication getPasswordAuthentication() {
-										return new PasswordAuthentication(
-												proxyUserName,
-												proxyPassword.toCharArray());
-									}
+public String getCLIDownloadUrl(final IntLogger logger, final HubIntRestService restService) throws IOException {
+
+	try {
+		final HubSupportHelper hubSupport = new HubSupportHelper();
+
+		hubSupport.checkHubSupport(restService, logger);
+
+		if (SystemUtils.IS_OS_MAC_OSX && hubSupport.isJreProvidedSupport()) {
+			return HubSupportHelper.getOSXCLIWrapperLink(restService.getBaseUrl());
+		} else if (SystemUtils.IS_OS_WINDOWS && hubSupport.isJreProvidedSupport()) {
+			return HubSupportHelper.getWindowsCLIWrapperLink(restService.getBaseUrl());
+		} else {
+			return HubSupportHelper.getLinuxCLIWrapperLink(restService.getBaseUrl());
+		}
+	} catch (final URISyntaxException e) {
+		logger.error(e.getMessage(), e);
+	}
+	return null;
+
+}
+
+private boolean customInstall(final URL archive, String hubVersion, final String localHostName,
+		final IntLogger logger) throws IOException,
+HubIntegrationException {
+	try {
+		if (!directoryToInstallTo.exists() && !directoryToInstallTo.mkdirs()) {
+			throw new HubIntegrationException("Could not create the directory : " + directoryToInstallTo.getCanonicalPath());
+		}
+
+		boolean cliMismatch = true;
+		// For some reason the Hub returns the Version inside quotes
+		hubVersion = hubVersion.replace("\"", "");
+		final File hubVersionFile = new File(directoryToInstallTo, VERSION_FILE_NAME);
+		if (hubVersionFile.exists()) {
+			final String storedHubVersion = IOUtils.toString(new FileInputStream(hubVersionFile));
+			if (hubVersion.equals(storedHubVersion)) {
+				cliMismatch = false;
+			} else {
+				hubVersionFile.delete();
+			}
+		}
+		if (cliMismatch) {
+			hubVersionFile.createNewFile();
+			final FileWriter writer = new FileWriter(hubVersionFile);
+			writer.write(hubVersion);
+			writer.close();
+		}
+		URLConnection connection = null;
+		try {
+			Proxy proxy = null;
+
+			if (StringUtils.isNotBlank(proxyHost)) {
+				proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+			}
+			if (proxy != null) {
+
+				if (StringUtils.isNotBlank(proxyUserName) && StringUtils.isNotBlank(proxyPassword)) {
+					Authenticator.setDefault(
+							new Authenticator() {
+								@Override
+								public PasswordAuthentication getPasswordAuthentication() {
+									return new PasswordAuthentication(
+											proxyUserName,
+											proxyPassword.toCharArray());
 								}
-								);
-					} else {
-						Authenticator.setDefault(null);
-					}
-				}
-				if (proxy != null) {
-					connection = archive.openConnection(proxy);
+							}
+							);
 				} else {
-					connection = archive.openConnection();
+					Authenticator.setDefault(null);
 				}
-				connection.connect();
-			} catch (final IOException ioe) {
-				logger.error("Skipping installation of " + archive + " to " + directoryToInstallTo.getCanonicalPath() + ": " + ioe.toString());
-				return false;
 			}
-
-			final File cliInstallDirectory = getCLIInstallDir();
-			if (cliInstallDirectory.exists() && cliInstallDirectory.listFiles().length > 0) {
-				if (!cliMismatch)
-				{
-					return false; // already up to date
-				}
-
-				// delete directory contents
-				deleteFilesRecursive(cliInstallDirectory.listFiles());
+			if (proxy != null) {
+				connection = archive.openConnection(proxy);
 			} else {
-				cliInstallDirectory.mkdir();
+				connection = archive.openConnection();
 			}
+			connection.connect();
+		} catch (final IOException ioe) {
+			logger.error("Skipping installation of " + archive + " to " + directoryToInstallTo.getCanonicalPath() + ": " + ioe.toString());
+			return false;
+		}
 
-			logger.info("Unpacking " + archive.toString() + " to " + cliInstallDirectory.getCanonicalPath() + " on " + localHostName);
+		if (getCLIExists(new NullLogger()) && !cliMismatch) {
+			return false; // already up to date
+		}
+		final File cliInstallDirectory = getCLIInstallDir();
+		if (cliInstallDirectory.exists() && cliInstallDirectory.listFiles().length > 0) {
+			// delete directory contents
+			deleteFilesRecursive(cliInstallDirectory.listFiles());
+		} else {
+			cliInstallDirectory.mkdir();
+		}
 
-			final InputStream in = connection.getInputStream();
-			final CountingInputStream cis = new CountingInputStream(in);
+		logger.info("Unpacking " + archive.toString() + " to " + cliInstallDirectory.getCanonicalPath() + " on " + localHostName);
 
-			try {
-				unzip(cliInstallDirectory, cis, logger);
-			} catch (final IOException e) {
-				throw new IOException(String.format("Failed to unpack %s (%d bytes read of total %d)",
-						archive, cis.getByteCount(), connection.getContentLength()), e);
-			}
-			return true;
+		final InputStream in = connection.getInputStream();
+		final CountingInputStream cis = new CountingInputStream(in);
+
+		try {
+			unzip(cliInstallDirectory, cis, logger);
 		} catch (final IOException e) {
-			throw new IOException("Failed to install " + archive + " to " + directoryToInstallTo.getCanonicalPath(), e);
+			throw new IOException(String.format("Failed to unpack %s (%d bytes read of total %d)",
+					archive, cis.getByteCount(), connection.getContentLength()), e);
 		}
-
+		return true;
+	} catch (final IOException e) {
+		throw new IOException("Failed to install " + archive + " to " + directoryToInstallTo.getCanonicalPath(), e);
 	}
+}
 
-	public void deleteFilesRecursive(final File[] files) {
+public void deleteFilesRecursive(final File[] files) {
 
-		if (files != null && files.length > 0) {
-			for (final File currentFile : files) {
-				if (currentFile != null && currentFile.exists()) {
-					if (currentFile.isDirectory()) {
-						deleteFilesRecursive(currentFile.listFiles());
-						currentFile.delete();
-					} else {
-						currentFile.delete();
-					}
-				}
-			}
-		}
-	}
-
-	private void unzip(final File dir, final InputStream in, final IntLogger logger) throws IOException {
-
-		final File tmpFile = File.createTempFile("tmpzip", null); // uses java.io.tmpdir
-		try {
-			copyInputStreamToFile(in, tmpFile);
-			unzip(dir, tmpFile, logger);
-		} finally {
-			tmpFile.delete();
-		}
-
-	}
-
-	private void unzip(File dir, final File zipFile, final IntLogger logger) throws IOException {
-
-		dir = dir.getAbsoluteFile(); // without absolutization, getParentFile below seems to fail
-		final ZipFile zip = new ZipFile(zipFile);
-		final
-		Enumeration<ZipEntry> entries = zip.getEntries();
-		try {
-			while (entries.hasMoreElements()) {
-				final ZipEntry e = entries.nextElement();
-				final File f = new File(dir, e.getName());
-				if (e.isDirectory()) {
-					f.mkdirs();
+	if (files != null && files.length > 0) {
+		for (final File currentFile : files) {
+			if (currentFile != null && currentFile.exists()) {
+				if (currentFile.isDirectory()) {
+					deleteFilesRecursive(currentFile.listFiles());
+					currentFile.delete();
 				} else {
-					final File p = f.getParentFile();
-					if (p != null) {
-						p.mkdirs();
-					}
-					final InputStream input = zip.getInputStream(e);
-					try {
-						copyInputStreamToFile(input, f);
-					} finally {
-						input.close();
-					}
-					f.setLastModified(e.getTime());
+					currentFile.delete();
 				}
 			}
-		} finally {
-			zip.close();
 		}
 	}
+}
 
-	private void copyInputStreamToFile(final InputStream in, final File f) throws IOException {
+private void unzip(final File dir, final InputStream in, final IntLogger logger) throws IOException {
 
-		final FileOutputStream fos = new FileOutputStream(f);
-		try {
-			org.apache.commons.io.IOUtils.copy(in, fos);
-		} finally {
-			org.apache.commons.io.IOUtils.closeQuietly(fos);
-		}
+	final File tmpFile = File.createTempFile("tmpzip", null); // uses java.io.tmpdir
+	try {
+		copyInputStreamToFile(in, tmpFile);
+		unzip(dir, tmpFile, logger);
+	} finally {
+		tmpFile.delete();
 	}
 
-	/**
-	 * Returns the executable file of the installation
-	 *
-	 *
-	 */
-	public File getProvidedJavaExec() throws IOException, InterruptedException {
+}
 
-		final File cliHomeFile = getCLIHome();
-		if (cliHomeFile == null) {
-			return null;
-		}
-		final File[] files = cliHomeFile.listFiles();
-		if (files != null && files.length > 0) {
-			File jreFolder = null;
-			for (final File directory : files) {
-				if ("jre".equalsIgnoreCase(directory.getName())) {
-					jreFolder = directory;
-					break;
-				}
-			}
-			if (jreFolder != null) {
-				File javaExec = null;
-				if (SystemUtils.IS_OS_MAC_OSX) {
-					javaExec = new File(jreFolder, "Contents");
-					javaExec = new File(javaExec, "Home");
-					javaExec = new File(javaExec, "bin");
-				} else {
-					javaExec = new File(jreFolder, "bin");
-				}
+private void unzip(File dir, final File zipFile, final IntLogger logger) throws IOException {
 
-				if (SystemUtils.IS_OS_WINDOWS) {
-					javaExec = new File(javaExec, "java.exe");
-				} else {
-					javaExec = new File(javaExec, "java");
+	dir = dir.getAbsoluteFile(); // without absolutization, getParentFile below seems to fail
+	final ZipFile zip = new ZipFile(zipFile);
+	final
+	Enumeration<ZipEntry> entries = zip.getEntries();
+	try {
+		while (entries.hasMoreElements()) {
+			final ZipEntry e = entries.nextElement();
+			final File f = new File(dir, e.getName());
+			if (e.isDirectory()) {
+				f.mkdirs();
+			} else {
+				final File p = f.getParentFile();
+				if (p != null) {
+					p.mkdirs();
 				}
-				if (javaExec.exists()) {
-					// when unpacking the bin directory files may not be executable
-					if (!javaExec.canExecute()) {
-						javaExec.setExecutable(true);
-					}
-					return javaExec;
+				final InputStream input = zip.getInputStream(e);
+				try {
+					copyInputStreamToFile(input, f);
+				} finally {
+					input.close();
 				}
+				f.setLastModified(e.getTime());
 			}
 		}
+	} finally {
+		zip.close();
+	}
+}
+
+private void copyInputStreamToFile(final InputStream in, final File f) throws IOException {
+
+	final FileOutputStream fos = new FileOutputStream(f);
+	try {
+		org.apache.commons.io.IOUtils.copy(in, fos);
+	} finally {
+		org.apache.commons.io.IOUtils.closeQuietly(fos);
+	}
+}
+
+/**
+ * Returns the executable file of the installation
+ *
+ *
+ */
+public File getProvidedJavaExec() throws IOException {
+
+	final File cliHomeFile = getCLIHome();
+	if (cliHomeFile == null) {
 		return null;
 	}
-
-	/**
-	 * Checks if the executable exists
-	 *
-	 */
-	public boolean getCLIExists(final IntLogger logger) throws IOException, InterruptedException {
-
-		final File cliHomeFile = getCLIHome();
-		if (cliHomeFile == null) {
-			return false;
-		}
-		// find the lib folder in the iScan directory
-		logger.debug("BlackDuck scan directory: " + cliHomeFile.getCanonicalPath());
-		final File[] files = cliHomeFile.listFiles();
-		if (files != null) {
-			logger.debug("directories in the BlackDuck scan directory: " + files.length);
-			if (files.length > 0) {
-				File libFolder = null;
-				for (final File directory : files) {
-					if ("lib".equalsIgnoreCase(directory.getName())) {
-						libFolder = directory;
-						break;
-					}
-				}
-				if (libFolder == null) {
-					logger.error("Could not find the lib directory of the CLI.");
-					return false;
-				}
-				logger.debug("BlackDuck scan lib directory: " + libFolder.getCanonicalPath());
-				final FilenameFilter nameFilter = new FilenameFilter() {
-					@Override
-					public boolean accept(final File dir, final String name) {
-						return name.matches("scan.cli.*.jar");
-					}
-				};
-				final File[] cliFiles = libFolder.listFiles(nameFilter);
-
-				File hubScanJar = null;
-				if (cliFiles.length == 0) {
-					return false;
-				} else {
-					hubScanJar = cliFiles[0];
-				}
-
-				return hubScanJar.exists();
-			} else {
-				logger.error("No files found in the BlackDuck scan directory.");
-				return false;
+	final File[] files = cliHomeFile.listFiles();
+	if (files != null && files.length > 0) {
+		File jreFolder = null;
+		for (final File directory : files) {
+			if ("jre".equalsIgnoreCase(directory.getName())) {
+				jreFolder = directory;
+				break;
 			}
-		} else {
-			logger.error("No files found in the BlackDuck scan directory.");
-			return false;
 		}
+		if (jreFolder != null) {
+			File javaExec = null;
+			if (SystemUtils.IS_OS_MAC_OSX) {
+				javaExec = new File(jreFolder, "Contents");
+				javaExec = new File(javaExec, "Home");
+				javaExec = new File(javaExec, "bin");
+			} else {
+				javaExec = new File(jreFolder, "bin");
+			}
 
+			if (SystemUtils.IS_OS_WINDOWS) {
+				javaExec = new File(javaExec, "java.exe");
+			} else {
+				javaExec = new File(javaExec, "java");
+			}
+			if (javaExec.exists()) {
+				// when unpacking the bin directory files may not be executable
+				if (!javaExec.canExecute()) {
+					javaExec.setExecutable(true);
+				}
+				return javaExec;
+			}
+		}
 	}
+	return null;
+}
 
-	/**
-	 * Returns the executable file of the installation
-	 *
-	 */
-	public File getCLI() throws IOException, InterruptedException {
+/**
+ * Checks if the executable exists
+ *
+ */
+public boolean getCLIExists(final IntLogger logger) throws IOException {
 
-		final File cliHomeFile = getCLIHome();
-		if (cliHomeFile == null) {
-			return null;
-		}
-		final File[] files = cliHomeFile.listFiles();
-		if (files != null && files.length > 0) {
+	final File cliHomeFile = getCLIHome();
+	if (cliHomeFile == null) {
+		return false;
+	}
+	// find the lib folder in the iScan directory
+	logger.debug("BlackDuck scan directory: " + cliHomeFile.getCanonicalPath());
+	final File[] files = cliHomeFile.listFiles();
+	if (files != null) {
+		logger.debug("directories in the BlackDuck scan directory: " + files.length);
+		if (files.length > 0) {
 			File libFolder = null;
 			for (final File directory : files) {
 				if ("lib".equalsIgnoreCase(directory.getName())) {
@@ -452,8 +410,10 @@ public class CLIInstaller {
 				}
 			}
 			if (libFolder == null) {
-				return null;
+				logger.error("Could not find the lib directory of the CLI.");
+				return false;
 			}
+			logger.debug("BlackDuck scan lib directory: " + libFolder.getCanonicalPath());
 			final FilenameFilter nameFilter = new FilenameFilter() {
 				@Override
 				public boolean accept(final File dir, final String name) {
@@ -461,36 +421,85 @@ public class CLIInstaller {
 				}
 			};
 			final File[] cliFiles = libFolder.listFiles(nameFilter);
+
+			File hubScanJar = null;
 			if (cliFiles.length == 0) {
-				return null;
+				return false;
 			} else {
-				final File file = cliFiles[0];
-
-				if (!file.canExecute()) {
-					file.setExecutable(true);
-				}
-
-				return file;
+				hubScanJar = cliFiles[0];
 			}
+
+			return hubScanJar.exists();
 		} else {
-			return null;
+			logger.error("No files found in the BlackDuck scan directory.");
+			return false;
 		}
+	} else {
+		logger.error("No files found in the BlackDuck scan directory.");
+		return false;
 	}
 
-	public File getOneJarFile() {
+}
 
-		final File cliHomeFile = getCLIHome();
-		if (cliHomeFile == null) {
+/**
+ * Returns the executable file of the installation
+ *
+ */
+public File getCLI() throws IOException {
+
+	final File cliHomeFile = getCLIHome();
+	if (cliHomeFile == null) {
+		return null;
+	}
+	final File[] files = cliHomeFile.listFiles();
+	if (files != null && files.length > 0) {
+		File libFolder = null;
+		for (final File directory : files) {
+			if ("lib".equalsIgnoreCase(directory.getName())) {
+				libFolder = directory;
+				break;
+			}
+		}
+		if (libFolder == null) {
 			return null;
 		}
-		File oneJarFile = new File(cliHomeFile, "lib");
-		oneJarFile = new File(oneJarFile, "cache");
-		oneJarFile = new File(oneJarFile, "scan.cli.impl-standalone.jar");
+		final FilenameFilter nameFilter = new FilenameFilter() {
+			@Override
+			public boolean accept(final File dir, final String name) {
+				return name.matches("scan.cli.*.jar");
+			}
+		};
+		final File[] cliFiles = libFolder.listFiles(nameFilter);
+		if (cliFiles.length == 0) {
+			return null;
+		} else {
+			final File file = cliFiles[0];
 
-		if (!oneJarFile.canExecute()) {
-			oneJarFile.setExecutable(true);
+			if (!file.canExecute()) {
+				file.setExecutable(true);
+			}
+
+			return file;
 		}
-
-		return oneJarFile;
+	} else {
+		return null;
 	}
+}
+
+public File getOneJarFile() {
+
+	final File cliHomeFile = getCLIHome();
+	if (cliHomeFile == null) {
+		return null;
+	}
+	File oneJarFile = new File(cliHomeFile, "lib");
+	oneJarFile = new File(oneJarFile, "cache");
+	oneJarFile = new File(oneJarFile, "scan.cli.impl-standalone.jar");
+
+	if (!oneJarFile.canExecute()) {
+		oneJarFile.setExecutable(true);
+	}
+
+	return oneJarFile;
+}
 }
