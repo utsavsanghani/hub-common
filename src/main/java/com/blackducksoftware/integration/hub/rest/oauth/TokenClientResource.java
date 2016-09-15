@@ -1,12 +1,12 @@
 package com.blackducksoftware.integration.hub.rest.oauth;
 
+import java.net.URI;
 import java.util.Objects;
 
 import org.restlet.Request;
 import org.restlet.Response;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.ext.oauth.OAuthResourceDefs;
 import org.restlet.ext.oauth.internal.Token;
@@ -17,8 +17,8 @@ public class TokenClientResource extends ClientResource implements OAuthResource
 
 	private final Token token;
 
-	public TokenClientResource(final Reference reference, final Token token) {
-		super(reference);
+	public TokenClientResource(final URI uri, final Token token) {
+		super(uri);
 		this.token = Objects.requireNonNull(token);
 	}
 

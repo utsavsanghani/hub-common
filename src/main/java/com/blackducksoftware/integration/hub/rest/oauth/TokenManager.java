@@ -1,6 +1,8 @@
 package com.blackducksoftware.integration.hub.rest.oauth;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +47,7 @@ public class TokenManager {
 		final OAuthParameters parameters = new OAuthParameters();
 		parameters.responseType(ResponseType.code);
 		parameters.add(OAuthParameters.CLIENT_ID, configuration.getClientId());
-		parameters.redirectURI(configuration.getAuthResponseUrl());
+		parameters.redirectURI(configuration.getAuthCodeResponseUrl());
 		parameters.scope(new String[] { "read" });
 
 		if (state != null) {
@@ -60,7 +62,7 @@ public class TokenManager {
 	}
 
 	private AccessTokenClientResource getTokenResource() {
-		final Reference reference = new Reference(configuration.getTokenGrantUrl());
+		final Reference reference = new Reference(configuration.getTokenRequestUrl());
 
 		final AccessTokenClientResource tokenResource = new AccessTokenClientResource(reference);
 		// Client ID here and not on OAuthParams so that it can auto-add to
@@ -115,10 +117,10 @@ public class TokenManager {
 		}
 	}
 
-	public TokenClientResource createClientResource(final Reference reference, final AccessType accessType)
-			throws IOException {
+	public TokenClientResource createClientResource(final String reference, final AccessType accessType)
+			throws IOException, URISyntaxException {
 		final Token token = getToken(accessType);
-		return new TokenClientResource(reference, token);
+		return new TokenClientResource(new URI(reference), token);
 	}
 
 	private Token getToken(final AccessType accessType) throws IOException {

@@ -1,6 +1,7 @@
 package com.blackducksoftware.integration.hub.rest.oauth.server;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.restlet.data.Reference;
@@ -41,22 +42,23 @@ public class TokenAuthResponseResource extends OAuthServerResource {
 				tokenManager.exchangeForToken(authorizationCode);
 
 				// Update authorization status
-				// TODO figure this one out....
-				final Reference extensionRef = new Reference("");// configurationService.getHubConfiguration().get().getExtensionUri();
-				final TokenClientResource resource = tokenManager.createClientResource(extensionRef, AccessType.CLIENT);
+				// this is hub specific as far as I can tell to send status for
+				// the authorization.
+				final String ackUrl = tokenManager.getConfiguration().getHubAuthAckUrl();
+				final TokenClientResource resource = tokenManager.createClientResource(ackUrl, AccessType.CLIENT);
 				try {
-					updateAuthenticated(resource);
+					updateAuthorized(resource);
 				} catch (final ResourceException e) {
 					if (Status.CLIENT_ERROR_UNAUTHORIZED.equals(e.getStatus())) {
 						// Try one more time, after refreshing tokens
 						tokenManager.refreshToken(AccessType.CLIENT);
-						updateAuthenticated(resource);
+						updateAuthorized(resource);
 					} else {
 						throw e;
 					}
 				}
 				getResponse().redirectSeeOther(redirectTo);
-			} catch (final IOException e) {
+			} catch (final IOException | URISyntaxException e) {
 				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
 			}
 		} else {
@@ -64,7 +66,7 @@ public class TokenAuthResponseResource extends OAuthServerResource {
 		}
 	}
 
-	private void updateAuthenticated(final ClientResource resource) throws IOException {
+	private void updateAuthorized(final ClientResource resource) throws IOException {
 		final Representation rep = resource.get();
 		final JsonParser parser = new JsonParser();
 		try {

@@ -2,43 +2,50 @@ package com.blackducksoftware.integration.hub.rest.oauth;
 
 public class OAuthConfiguration {
 	private final String clientId;
-	private final String authResponseUrl;
 	private final String localBaseUrl;
+	private final String authCodeResponseUrl;
 	private final String authorizeUrl;
-	private final String tokenGrantUrl;
+	private final String tokenRequestUrl;
+	private final String hubAuthAckUrl;
 
-	public OAuthConfiguration(final String clientId, final String authResponseUrl, final String localBaseUrl,
-			final String authorizeUrl, final String tokenGrantUrl) {
+	public OAuthConfiguration(final String clientId, final String localBaseUrl, final String authCodeResponseUrl,
+			final String authorizeUrl, final String tokenRequestUrl, final String hubAuthAckUrl) {
 		this.clientId = clientId;
-		this.authResponseUrl = authResponseUrl;
 		this.localBaseUrl = localBaseUrl;
+		this.authCodeResponseUrl = authCodeResponseUrl;
 		this.authorizeUrl = authorizeUrl;
-		this.tokenGrantUrl = tokenGrantUrl;
+		this.tokenRequestUrl = tokenRequestUrl;
+		this.hubAuthAckUrl = hubAuthAckUrl;
 	}
 
 	public String getClientId() {
 		return clientId;
 	}
 
-	public String getAuthResponseUrl() {
-		return authResponseUrl;
-	}
-
 	public String getLocalBaseUrl() {
 		return localBaseUrl;
+	}
+
+	public String getAuthCodeResponseUrl() {
+		return authCodeResponseUrl;
 	}
 
 	public String getAuthorizeUrl() {
 		return authorizeUrl;
 	}
 
-	public String getTokenGrantUrl() {
-		return tokenGrantUrl;
+	public String getTokenRequestUrl() {
+		return tokenRequestUrl;
+	}
+
+	public String getHubAuthAckUrl() {
+		return hubAuthAckUrl;
 	}
 
 	@Override
 	public String toString() {
-		return "OAuthConfiguration [clientId=" + clientId + ", authResponseUrl=" + authResponseUrl + ", localBaseUrl="
-				+ localBaseUrl + ", authorizeUrl=" + authorizeUrl + ", tokenGrantUrl=" + tokenGrantUrl + "]";
+		return "OAuthConfiguration [clientId=" + clientId + ", localBaseUrl=" + localBaseUrl + ", authCodeResponseUrl="
+				+ authCodeResponseUrl + ", authorizeUrl=" + authorizeUrl + ", tokenRequestUrl=" + tokenRequestUrl
+				+ ", hubAuthAckUrl=" + hubAuthAckUrl + "]";
 	}
 }
