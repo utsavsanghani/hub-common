@@ -13,7 +13,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 
 import com.blackducksoftware.integration.hub.rest.oauth.AccessType;
-import com.blackducksoftware.integration.hub.rest.oauth.AuthenticationState;
+import com.blackducksoftware.integration.hub.rest.oauth.AuthorizationState;
 import com.blackducksoftware.integration.hub.rest.oauth.TokenClientResource;
 import com.blackducksoftware.integration.hub.rest.oauth.TokenManager;
 import com.google.gson.JsonElement;
@@ -32,7 +32,7 @@ public class TokenAuthResponseResource extends ServerResource {
 		final String authorizationCode = getQuery().getFirstValue("code");
 		final String urlState = getQuery().getFirstValue("state");
 
-		final AuthenticationState state = new AuthenticationState(urlState);
+		final AuthorizationState state = new AuthorizationState(urlState);
 		final Reference redirectTo;
 
 		if (!StringUtils.isNotBlank(state.getReturnUrl())) {

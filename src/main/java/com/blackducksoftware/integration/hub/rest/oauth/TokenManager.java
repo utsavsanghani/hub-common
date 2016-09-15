@@ -34,8 +34,8 @@ public class TokenManager {
 	public void updateClientId(final String clientId) {
 	}
 
-	public Reference getOAuthAuthorizationUrl(final AuthenticationState state) {
-		final Reference reference = new Reference(configuration.getLinks().getAuthorizeUrl());
+	public Reference getOAuthAuthorizationUrl(final AuthorizationState state) {
+		final Reference reference = new Reference(configuration.getAuthorizeUrl());
 
 		final OAuthParameters parameters = new OAuthParameters();
 		parameters.responseType(ResponseType.code);
@@ -55,7 +55,7 @@ public class TokenManager {
 	}
 
 	private AccessTokenClientResource getTokenResource() {
-		final Reference reference = new Reference(configuration.getLinks().getTokenUrl());
+		final Reference reference = new Reference(configuration.getTokenGrantUrl());
 
 		final AccessTokenClientResource tokenResource = new AccessTokenClientResource(reference);
 		// Client ID here and not on OAuthParams so that it can auto-add to
@@ -71,7 +71,7 @@ public class TokenManager {
 		final OAuthParameters parameters = new OAuthParameters();
 		parameters.grantType(GrantType.authorization_code);
 		// TODO check if this is the correct URL
-		parameters.redirectURI(configuration.getLinks().getAuthorizeUrl());
+		parameters.redirectURI(configuration.getAuthorizeUrl());
 		parameters.code(code);
 
 		return parameters;

@@ -4,14 +4,16 @@ public class OAuthConfiguration {
 	private final String clientId;
 	private final String authResponseUrl;
 	private final String localBaseUrl;
-	private final TokenLinks links;
+	private final String authorizeUrl;
+	private final String tokenGrantUrl;
 
 	public OAuthConfiguration(final String clientId, final String authResponseUrl, final String localBaseUrl,
-			final TokenLinks links) {
+			final String authorizeUrl, final String tokenGrantUrl) {
 		this.clientId = clientId;
 		this.authResponseUrl = authResponseUrl;
 		this.localBaseUrl = localBaseUrl;
-		this.links = links;
+		this.authorizeUrl = authorizeUrl;
+		this.tokenGrantUrl = tokenGrantUrl;
 	}
 
 	public String getClientId() {
@@ -26,13 +28,17 @@ public class OAuthConfiguration {
 		return localBaseUrl;
 	}
 
-	public TokenLinks getLinks() {
-		return links;
+	public String getAuthorizeUrl() {
+		return authorizeUrl;
+	}
+
+	public String getTokenGrantUrl() {
+		return tokenGrantUrl;
 	}
 
 	@Override
 	public String toString() {
 		return "OAuthConfiguration [clientId=" + clientId + ", authResponseUrl=" + authResponseUrl + ", localBaseUrl="
-				+ localBaseUrl + ", links=" + links + "]";
+				+ localBaseUrl + ", authorizeUrl=" + authorizeUrl + ", tokenGrantUrl=" + tokenGrantUrl + "]";
 	}
 }

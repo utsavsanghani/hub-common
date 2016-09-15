@@ -8,22 +8,22 @@ import org.restlet.data.Status;
 import org.restlet.resource.Get;
 import org.restlet.resource.ServerResource;
 
-import com.blackducksoftware.integration.hub.rest.oauth.AuthenticationState;
+import com.blackducksoftware.integration.hub.rest.oauth.AuthorizationState;
 import com.blackducksoftware.integration.hub.rest.oauth.TokenManager;
 
-public class TokenAuthenticateResource extends ServerResource {
+public class TokenAuthorizationResource extends ServerResource {
 
 	private final TokenManager tokenManager;
 
-	public TokenAuthenticateResource(final TokenManager tokenManager) {
+	public TokenAuthorizationResource(final TokenManager tokenManager) {
 		this.tokenManager = Objects.requireNonNull(tokenManager);
 	}
 
 	@Get
-	public void authenticate() {
+	public void authorize() {
 		// Use state if provided
 		final String next = getRequest().getResourceRef().getQueryAsForm(true).getFirstValue("next");
-		final AuthenticationState state = new AuthenticationState(getQueryValue("state"));
+		final AuthorizationState state = new AuthorizationState(getQueryValue("state"));
 
 		if (!StringUtils.isNotBlank(state.getReturnUrl()) && next != null) {
 			state.setReturnUrl(next);

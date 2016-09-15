@@ -13,7 +13,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-public final class AuthenticationState {
+public final class AuthorizationState {
 
 	private static final String REFERING_PATH_KEY = "refering_path";
 
@@ -23,7 +23,7 @@ public final class AuthenticationState {
 
 	private String returnUrl;
 
-	public AuthenticationState(final String urlState) {
+	public AuthorizationState(final String urlState) {
 		final Map<String, String> decoded = decodeMap(urlState);
 
 		referingPath = null;
@@ -40,7 +40,7 @@ public final class AuthenticationState {
 		}
 	}
 
-	public AuthenticationState() {
+	public AuthorizationState() {
 		referingPath = null;
 		returnUrl = null;
 	}
@@ -129,8 +129,8 @@ public final class AuthenticationState {
 	public boolean equals(final Object obj) {
 		boolean result = false;
 
-		if (obj instanceof AuthenticationState) {
-			final AuthenticationState compare = (AuthenticationState) obj;
+		if (obj instanceof AuthorizationState) {
+			final AuthorizationState compare = (AuthorizationState) obj;
 
 			result = Objects.equals(compare.getReferingPath(), getReferingPath())
 					&& Objects.equals(compare.getReturnUrl(), getReturnUrl());
