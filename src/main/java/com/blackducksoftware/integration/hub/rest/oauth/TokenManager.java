@@ -24,6 +24,10 @@ public class TokenManager {
 	private Token userToken = null;
 	private Token clientToken = null;
 
+	public TokenManager() {
+		configuration = new OAuthConfiguration("", "", "", "", "", "");
+	}
+
 	public OAuthConfiguration getConfiguration() {
 		return configuration;
 	}
@@ -39,6 +43,10 @@ public class TokenManager {
 
 	public void updateClientId(final String clientId) {
 
+		final OAuthConfiguration newConfig = new OAuthConfiguration(clientId, configuration.getLocalBaseUrl(),
+				configuration.getAuthCodeResponseUrl(), configuration.getAuthorizeUrl(),
+				configuration.getTokenRequestUrl(), configuration.getHubAuthAckUrl());
+		applyConfig(newConfig);
 	}
 
 	public Reference getOAuthAuthorizationUrl(final AuthorizationState state) {

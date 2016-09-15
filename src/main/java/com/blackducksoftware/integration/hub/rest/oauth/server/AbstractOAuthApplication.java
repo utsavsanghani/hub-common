@@ -21,7 +21,7 @@ public abstract class AbstractOAuthApplication extends Application {
 		final Router router = new Router(getContext());
 
 		router.attach(ServerConstants.REGISTRATION, ClientRegistrationResource.class);
-		router.attach(ServerConstants.CALLBACK, TokenAuthResponseResource.class);
+		router.attach(ServerConstants.CALLBACK, TokenCallbackResource.class);
 		router.attach(ServerConstants.AUTH_GRANT, TokenAuthorizationResource.class);
 		additionalRouterConfig(router);
 		return router;

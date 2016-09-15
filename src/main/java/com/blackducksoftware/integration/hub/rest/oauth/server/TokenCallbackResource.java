@@ -20,7 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
-public class TokenAuthResponseResource extends OAuthServerResource {
+public class TokenCallbackResource extends OAuthServerResource {
 
 	@Get
 	public void accept() {
