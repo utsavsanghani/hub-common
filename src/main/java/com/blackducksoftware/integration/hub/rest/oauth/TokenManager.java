@@ -1,6 +1,7 @@
 package com.blackducksoftware.integration.hub.rest.oauth;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -14,14 +15,12 @@ import org.restlet.ext.oauth.internal.Token;
 
 public class TokenManager {
 
-	private final OAuthConfiguration configuration;
+	public final static String CONTEXT_ATTRIBUTE_KEY = "blackduck-oauth-token-manager";
+
+	private OAuthConfiguration configuration;
 	// Internal storage for tokens - done in-memory as a simple example
 	private Token userToken = null;
 	private Token clientToken = null;
-
-	public TokenManager(final OAuthConfiguration configuration) {
-		this.configuration = configuration;
-	}
 
 	public OAuthConfiguration getConfiguration() {
 		return configuration;
@@ -31,7 +30,13 @@ public class TokenManager {
 		return userToken == null;
 	}
 
+	public void applyConfig(final OAuthConfiguration configuration) {
+		Objects.requireNonNull(configuration, "OAuthConfiguration cannot be null for the Token Manager");
+		this.configuration = configuration;
+	}
+
 	public void updateClientId(final String clientId) {
+
 	}
 
 	public Reference getOAuthAuthorizationUrl(final AuthorizationState state) {

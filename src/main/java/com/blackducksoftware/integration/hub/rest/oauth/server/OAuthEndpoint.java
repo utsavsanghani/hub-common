@@ -15,7 +15,6 @@ public class OAuthEndpoint extends Component {
 
 		getClients().add(Protocol.FILE);
 		getClients().add(Protocol.HTTP);
-		getClients().add(Protocol.HTTPS);
 		// Prevent warnings about unsupported authentication
 		Engine.getInstance().getRegisteredAuthenticators()
 				.add(new AuthenticatorHelper(ChallengeScheme.HTTP_OAUTH_BEARER, true, false) {

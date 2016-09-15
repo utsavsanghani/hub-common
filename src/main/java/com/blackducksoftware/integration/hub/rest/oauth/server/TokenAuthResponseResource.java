@@ -10,7 +10,6 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.ServerResource;
 
 import com.blackducksoftware.integration.hub.rest.oauth.AccessType;
 import com.blackducksoftware.integration.hub.rest.oauth.AuthorizationState;
@@ -20,48 +19,48 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
-public class TokenAuthResponseResource extends ServerResource {
-	private final TokenManager tokenManager;
-
-	public TokenAuthResponseResource(final TokenManager tokenManager) {
-		this.tokenManager = tokenManager;
-	}
+public class TokenAuthResponseResource extends OAuthServerResource {
 
 	@Get
 	public void accept() {
-		final String authorizationCode = getQuery().getFirstValue("code");
-		final String urlState = getQuery().getFirstValue("state");
+		final TokenManager tokenManager = getTokenManager();
+		if (tokenManager != null) {
+			final String authorizationCode = getQuery().getFirstValue("code");
+			final String urlState = getQuery().getFirstValue("state");
 
-		final AuthorizationState state = new AuthorizationState(urlState);
-		final Reference redirectTo;
+			final AuthorizationState state = new AuthorizationState(urlState);
+			final Reference redirectTo;
 
-		if (!StringUtils.isNotBlank(state.getReturnUrl())) {
-			redirectTo = new Reference(state.getReturnUrl());
-		} else {
-			redirectTo = new Reference(tokenManager.getConfiguration().getLocalBaseUrl());
-		}
-
-		try {
-			tokenManager.exchangeForToken(authorizationCode);
-
-			// Update authorization status
-			// TODO figure this one out....
-			final Reference extensionRef = new Reference("");// configurationService.getHubConfiguration().get().getExtensionUri();
-			final TokenClientResource resource = tokenManager.createClientResource(extensionRef, AccessType.CLIENT);
-			try {
-				updateAuthenticated(resource);
-			} catch (final ResourceException e) {
-				if (Status.CLIENT_ERROR_UNAUTHORIZED.equals(e.getStatus())) {
-					// Try one more time, after refreshing tokens
-					tokenManager.refreshToken(AccessType.CLIENT);
-					updateAuthenticated(resource);
-				} else {
-					throw e;
-				}
+			if (!StringUtils.isNotBlank(state.getReturnUrl())) {
+				redirectTo = new Reference(state.getReturnUrl());
+			} else {
+				redirectTo = new Reference(tokenManager.getConfiguration().getLocalBaseUrl());
 			}
-			getResponse().redirectSeeOther(redirectTo);
-		} catch (final IOException e) {
-			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+
+			try {
+				tokenManager.exchangeForToken(authorizationCode);
+
+				// Update authorization status
+				// TODO figure this one out....
+				final Reference extensionRef = new Reference("");// configurationService.getHubConfiguration().get().getExtensionUri();
+				final TokenClientResource resource = tokenManager.createClientResource(extensionRef, AccessType.CLIENT);
+				try {
+					updateAuthenticated(resource);
+				} catch (final ResourceException e) {
+					if (Status.CLIENT_ERROR_UNAUTHORIZED.equals(e.getStatus())) {
+						// Try one more time, after refreshing tokens
+						tokenManager.refreshToken(AccessType.CLIENT);
+						updateAuthenticated(resource);
+					} else {
+						throw e;
+					}
+				}
+				getResponse().redirectSeeOther(redirectTo);
+			} catch (final IOException e) {
+				getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
+			}
+		} else {
+			getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, "No token manager available");
 		}
 	}
 
