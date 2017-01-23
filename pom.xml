@@ -22,6 +22,12 @@
     <url>https://www.github.com/blackducksoftware/hub-common</url>
   </scm>
 
+  <properties>
+    <hub.password>blackduck</hub.password>
+    <hub.url>http://int-hub01.dc1.lan:8080/</hub.url>
+    <hub.username>sysadmin</hub.username>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.blackducksoftware.integration</groupId>
@@ -77,6 +83,12 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>com.blackducksoftware.integration</groupId>
+        <artifactId>hub-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <inherited>false</inherited>
+      </plugin>
       <plugin>
         <artifactId>maven-remote-resources-plugin</artifactId>
         <version>1.5</version>
