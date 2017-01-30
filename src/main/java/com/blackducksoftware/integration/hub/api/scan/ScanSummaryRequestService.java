@@ -30,13 +30,12 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
 public class ScanSummaryRequestService extends HubParameterizedRequestService<ScanSummaryItem> {
-    public ScanSummaryRequestService(final RestConnection restConnection) {
-        super(restConnection, ScanSummaryItem.class);
-    }
+	public ScanSummaryRequestService(final RestConnection restConnection) {
+		super(restConnection, ScanSummaryItem.class);
+	}
 
-    public List<ScanSummaryItem> getAllScanSummaryItems(final String scanSummaryUrl) throws HubIntegrationException {
-        final List<ScanSummaryItem> allScanSummaryItems = getAllItems(scanSummaryUrl);
-        return allScanSummaryItems;
-    }
-
+	public List<ScanSummaryItem> getAllScanSummaryItems(final String scanSummaryUrl) throws HubIntegrationException {
+		final List<ScanSummaryItem> allScanSummaryItems = getAllItems(scanSummaryUrl);
+		return allScanSummaryItems;
+	}
 }

@@ -37,7 +37,6 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 
 
@@ -88,7 +87,6 @@ public class CredentialsRestConnection extends RestConnection {
             final ArrayList<String> segments = new ArrayList<>();
             segments.add("j_spring_security_check");
             final com.squareup.okhttp.HttpUrl httpUrl = createHttpUrl(segments, null);
-
             final Map<String, String> content = new HashMap<>();
             final String username = hubServerConfig.getGlobalCredentials().getUsername();
             String password = hubServerConfig.getGlobalCredentials().getEncryptedPassword();

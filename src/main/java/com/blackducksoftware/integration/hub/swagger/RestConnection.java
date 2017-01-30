@@ -46,6 +46,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import com.squareup.okhttp.Authenticator;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.FormEncodingBuilder;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.HttpUrl;
 import com.squareup.okhttp.MediaType;
@@ -96,6 +98,8 @@ public abstract class RestConnection {
         }
         this.baseUrl = baseUrl;
         this.hubProxyInfo = hubProxyInfo;
+        client = new OkHttpClient();
+        client.setSslSocketFactory(null);
         // just in case setTimeout() is never called
         setTimeout(timeout);
     }
@@ -124,9 +128,9 @@ public abstract class RestConnection {
         addBuilderConnectionTimes();
         addBuilderProxyInformation();
         addBuilderAuthentication();
-        //TODO: Build the client first
-      
-        setClient(client);
+        //TODO: Build the client first. Kind of already are
+        //setClient(client);
+        
         clientAuthenticate();
     }
 
@@ -160,6 +164,7 @@ public abstract class RestConnection {
     public HttpUrl createHttpUrl(final String providedUrl, final List<String> urlSegments,
             final Map<String, String> queryParameters) {
         final HttpUrl.Builder urlBuilder = HttpUrl.parse(providedUrl).newBuilder();
+        urlBuilder.scheme("http");
         if (urlSegments != null) {
             for (final String urlSegment : urlSegments) {
                 urlBuilder.addPathSegment(urlSegment);
@@ -205,11 +210,12 @@ public abstract class RestConnection {
     }
 
     public RequestBody createEncodedRequestBody(final Map<String, String> content) {
-        final Request.Builder builder = new Request.Builder();
+        final FormEncodingBuilder builder = new FormEncodingBuilder();
         for (final Entry<String, String> contentEntry : content.entrySet()) {
-        	builder.addHeader(contentEntry.getKey(), contentEntry.getValue());
+        	// TODO: try addEncoded if that doesnt work
+        	builder.addEncoded(contentEntry.getKey(), contentEntry.getValue());
         }
-        return builder.build().body();
+        return builder.build();
     }
 
     public Request createGetRequest(final HttpUrl httpUrl) {
@@ -255,7 +261,9 @@ public abstract class RestConnection {
     private Response handleExecuteClientCall(final Request request, final int retryCount) throws IOException, HubIntegrationException {
         if (getClient() != null) {
             logRequestHeaders(request);
-            final Response response = getClient().newCall(request).execute();
+            final Call call = getClient().newCall(request);
+            //call.
+            final Response response = call.execute();
             if (!response.isSuccessful()) {
                 if (response.code() == 401 && retryCount < 2) {
                     connect();
