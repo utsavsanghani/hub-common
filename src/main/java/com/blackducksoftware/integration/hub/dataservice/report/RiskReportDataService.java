@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
 import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
 import com.blackducksoftware.integration.hub.api.report.HubRiskReportData;
 import com.blackducksoftware.integration.hub.api.report.ReportCategoriesEnum;
-import com.blackducksoftware.integration.hub.api.report.ReportFormatEnum;
 import com.blackducksoftware.integration.hub.api.report.ReportRequestService;
 import com.blackducksoftware.integration.hub.api.report.RiskReportResourceCopier;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
@@ -44,6 +43,7 @@ import com.blackducksoftware.integration.log.IntLogger;
 
 import io.swagger.client.model.ProjectVersionView;
 import io.swagger.client.model.ProjectView;
+import io.swagger.client.model.ReportView;
 
 public class RiskReportDataService extends HubRequestService {
 
@@ -70,7 +70,7 @@ public class RiskReportDataService extends HubRequestService {
 	public HubRiskReportData createRiskReport(final String projectName, final String projectVersionName, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
 		final ProjectView project = projectRequestService.getProjectByName(projectName);
 		final ProjectVersionView version = projectVersionRequestService.getProjectVersion(project, projectVersionName);
-		return reportRequestService.generateHubReport(version, ReportFormatEnum.JSON, categories);
+		return reportRequestService.generateHubReport(version, ReportView.ReportFormatEnum.JSON, categories);
 	}
 
 	public HubRiskReportData createRiskReport(final ProjectVersionView version) throws HubIntegrationException {
@@ -79,7 +79,7 @@ public class RiskReportDataService extends HubRequestService {
 	}
 
 	public HubRiskReportData createRiskReport(final ProjectVersionView version, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
-		return reportRequestService.generateHubReport(version, ReportFormatEnum.JSON, categories);
+		return reportRequestService.generateHubReport(version, ReportView.ReportFormatEnum.JSON, categories);
 	}
 
 	public void createRiskReportFiles(final File outputDirectory, final String projectName, final String projectVersionName) throws HubIntegrationException {

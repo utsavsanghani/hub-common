@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.blackducksoftware.integration.hub.api.codelocation.CodeLocationRequestService;
-import com.blackducksoftware.integration.hub.api.codelocation.CodeLocationTypeEnum;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
 import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
@@ -163,7 +162,7 @@ public class ScanStatusDataService extends HubRequestService {
 			final ProjectVersionView projectVersionItem = projectVersionRequestService.getProjectVersion(projectItem, projectVersion);
 			final String projectVersionUrl = metaService.getHref(projectVersionItem);
 
-			final List<CodeLocationView> allCodeLocations = codeLocationRequestService.getAllCodeLocationsForCodeLocationType(CodeLocationTypeEnum.BOM_IMPORT);
+			final List<CodeLocationView> allCodeLocations = codeLocationRequestService.getAllCodeLocationsForCodeLocationType(CodeLocationView.TypeEnum.BOM_IMPORT);
 
 			final List<String> allScanSummariesLinks = new ArrayList<>();
 			for (final CodeLocationView codeLocationItem : allCodeLocations) {

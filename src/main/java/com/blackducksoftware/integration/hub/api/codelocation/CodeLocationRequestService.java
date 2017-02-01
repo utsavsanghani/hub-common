@@ -48,11 +48,10 @@ public class CodeLocationRequestService extends HubParameterizedRequestService<C
 		return allCodeLocations;
 	}
 
-	public List<CodeLocationView> getAllCodeLocationsForCodeLocationType(final CodeLocationTypeEnum codeLocationType) throws HubIntegrationException {
+	public List<CodeLocationView> getAllCodeLocationsForCodeLocationType(final CodeLocationView.TypeEnum codeLocationType) throws HubIntegrationException {
 		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(CODE_LOCATION_SEGMENTS).addQueryParameter("codeLocationType", codeLocationType.toString());
 
 		final List<CodeLocationView> allCodeLocations = getAllItems(hubPagedRequest);
 		return allCodeLocations;
 	}
-
 }

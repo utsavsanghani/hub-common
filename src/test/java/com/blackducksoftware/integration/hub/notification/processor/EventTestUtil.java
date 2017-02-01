@@ -32,7 +32,6 @@ import org.joda.time.DateTime;
 import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.hub.api.notification.VulnerabilitySourceQualifiedId;
-import com.blackducksoftware.integration.hub.api.vulnerability.SeverityEnum;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.FullProjectVersionView;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyOverrideContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationClearedContentItem;
@@ -125,20 +124,20 @@ public class EventTestUtil {
 		final List<VulnerabilityView> vulnerabilityList = new ArrayList<>(vulnSourceList.size());
 		for (final VulnerabilitySourceQualifiedId vulnSource : vulnSourceList) {
 			final String vulnId = vulnSource.getVulnerabilityId();
-			SeverityEnum severity = SeverityEnum.UNKNOWN;
+			VulnerabilityView.SeverityEnum severity = VulnerabilityView.SeverityEnum.UNKNOWN;
 			if (vulnId.startsWith(HIGH_VULN_PREFIX)) {
-				severity = SeverityEnum.HIGH;
+				severity = VulnerabilityView.SeverityEnum.HIGH;
 			} else if (vulnId.startsWith(MEDIUM_VULN_PREFIX)) {
-				severity = SeverityEnum.MEDIUM;
+				severity = VulnerabilityView.SeverityEnum.MEDIUM;
 			} else if (vulnId.startsWith(LOW_VULN_PREFIX)) {
-				severity = SeverityEnum.LOW;
+				severity = VulnerabilityView.SeverityEnum.LOW;
 			}
 			vulnerabilityList.add(createVulnerability(vulnId, severity));
 		}
 		return vulnerabilityList;
 	}
 
-	public VulnerabilityView createVulnerability(final String vulnId, final SeverityEnum severity) {
+	public VulnerabilityView createVulnerability(final String vulnId, final VulnerabilityView.SeverityEnum severity) {
 		final VulnerabilityView item = Mockito.mock(VulnerabilityView.class);
 		Mockito.when(item.getVulnerabilityName()).thenReturn(vulnId);
 		Mockito.when(item.getDescription()).thenReturn("A vulnerability");

@@ -39,6 +39,7 @@ import com.google.gson.JsonObject;
 
 import io.swagger.client.model.ProjectVersionView;
 import io.swagger.client.model.ReportView;
+import io.swagger.client.model.ReportView.ReportFormatEnum;
 
 public class ReportRequestService extends HubParameterizedRequestService<ReportView> {
 	public final static long DEFAULT_TIMEOUT = 1000 * 60 * 5;

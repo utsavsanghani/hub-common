@@ -28,8 +28,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.version.DistributionEnum;
-import com.blackducksoftware.integration.hub.api.version.PhaseEnum;
 import com.blackducksoftware.integration.hub.exception.DoesNotExistException;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
@@ -77,7 +75,7 @@ public class ProjectVersionRequestService extends HubParameterizedRequestService
 		return allProjectVersionItems;
 	}
 
-	public String createHubVersion(final ProjectView project, final String versionName, final PhaseEnum phase, final DistributionEnum dist) throws HubIntegrationException {
+	public String createHubVersion(final ProjectView project, final String versionName, final ProjectVersionView.PhaseEnum phase, final ProjectVersionView.DistributionEnum dist) throws HubIntegrationException {
 		final JsonObject json = new JsonObject();
 		json.addProperty("versionName", versionName);
 		json.addProperty("phase", phase.name());
