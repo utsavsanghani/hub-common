@@ -39,54 +39,56 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 import com.google.gson.JsonObject;
 
-public class ProjectRequestService extends HubParameterizedRequestService<ProjectItem> {
-    private static final List<String> PROJECTS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_PROJECTS);
+import io.swagger.client.model.ProjectView;
 
-    public ProjectRequestService(final RestConnection restConnection) {
-        super(restConnection, ProjectItem.class);
-    }
+public class ProjectRequestService extends HubParameterizedRequestService<ProjectView> {
+	private static final List<String> PROJECTS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_PROJECTS);
 
-    public List<ProjectItem> getAllProjects() throws HubIntegrationException {
-        final List<ProjectItem> allProjectItems = getAllItems(PROJECTS_SEGMENTS);
-        return allProjectItems;
-    }
+	public ProjectRequestService(final RestConnection restConnection) {
+		super(restConnection, ProjectView.class);
+	}
 
-    public List<ProjectItem> getAllProjectMatches(final String projectName) throws HubIntegrationException {
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(PROJECTS_SEGMENTS);
-        if (StringUtils.isNotBlank(projectName)) {
-            hubPagedRequest.setQ("name:" + projectName);
-        }
+	public List<ProjectView> getAllProjects() throws HubIntegrationException {
+		final List<ProjectView> allProjectItems = getAllItems(PROJECTS_SEGMENTS);
+		return allProjectItems;
+	}
 
-        final List<ProjectItem> allProjectItems = getAllItems(hubPagedRequest);
-        return allProjectItems;
-    }
+	public List<ProjectView> getAllProjectMatches(final String projectName) throws HubIntegrationException {
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(PROJECTS_SEGMENTS);
+		if (StringUtils.isNotBlank(projectName)) {
+			hubPagedRequest.setQ("name:" + projectName);
+		}
 
-    public List<ProjectItem> getProjectMatches(final String projectName, final int limit) throws HubIntegrationException {
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(limit, PROJECTS_SEGMENTS);
-        if (StringUtils.isNotBlank(projectName)) {
-            hubPagedRequest.setQ("name:" + projectName);
-        }
+		final List<ProjectView> allProjectItems = getAllItems(hubPagedRequest);
+		return allProjectItems;
+	}
 
-        final List<ProjectItem> projectItems = getItems(hubPagedRequest);
-        return projectItems;
-    }
+	public List<ProjectView> getProjectMatches(final String projectName, final int limit) throws HubIntegrationException {
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(limit, PROJECTS_SEGMENTS);
+		if (StringUtils.isNotBlank(projectName)) {
+			hubPagedRequest.setQ("name:" + projectName);
+		}
 
-    public ProjectItem getProjectByName(final String projectName) throws HubIntegrationException {
-        final List<ProjectItem> allProjectItems = getAllProjectMatches(projectName);
-        for (final ProjectItem project : allProjectItems) {
-            if (projectName.equals(project.getName())) {
-                return project;
-            }
-        }
-        throw new DoesNotExistException("This Project does not exist. Project : " + projectName);
-    }
+		final List<ProjectView> projectItems = getItems(hubPagedRequest);
+		return projectItems;
+	}
 
-    public String createHubProject(final String projectName) throws HubIntegrationException {
-        final HubRequest projectItemRequest = getHubRequestFactory().createPostRequest(PROJECTS_SEGMENTS);
-        final JsonObject json = new JsonObject();
-        json.addProperty("name", projectName);
-        final String location = projectItemRequest.executePost(getRestConnection().getGson().toJson(json));
-        return location;
-    }
+	public ProjectView getProjectByName(final String projectName) throws HubIntegrationException {
+		final List<ProjectView> allProjectItems = getAllProjectMatches(projectName);
+		for (final ProjectView project : allProjectItems) {
+			if (projectName.equals(project.getName())) {
+				return project;
+			}
+		}
+		throw new DoesNotExistException("This Project does not exist. Project : " + projectName);
+	}
+
+	public String createHubProject(final String projectName) throws HubIntegrationException {
+		final HubRequest projectItemRequest = getHubRequestFactory().createPostRequest(PROJECTS_SEGMENTS);
+		final JsonObject json = new JsonObject();
+		json.addProperty("name", projectName);
+		final String location = projectItemRequest.executePost(getRestConnection().getGson().toJson(json));
+		return location;
+	}
 
 }

@@ -26,44 +26,43 @@ package com.blackducksoftware.integration.hub.api.version;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.blackducksoftware.integration.hub.api.item.HubResponse;
+import io.swagger.client.model.HubView;
 
-public class VersionComparison extends HubResponse {
-    private final String consumerVersion;
+public class VersionComparison extends HubView {
+	private final String consumerVersion;
 
-    private final String producerVersion;
+	private final String producerVersion;
 
-    private final Integer numericResult;
+	private final Integer numericResult;
 
-    private final String operatorResult;
+	private final String operatorResult;
 
-    public VersionComparison(final String consumerVersion, final String producerVersion, final Integer numericResult,
-            final String operatorResult) {
-        this.consumerVersion = consumerVersion;
-        this.producerVersion = producerVersion;
-        this.numericResult = numericResult;
-        this.operatorResult = operatorResult;
-    }
+	public VersionComparison(final String consumerVersion, final String producerVersion, final Integer numericResult, final String operatorResult) {
+		this.consumerVersion = consumerVersion;
+		this.producerVersion = producerVersion;
+		this.numericResult = numericResult;
+		this.operatorResult = operatorResult;
+	}
 
-    public String getConsumerVersion() {
-        return consumerVersion;
-    }
+	public String getConsumerVersion() {
+		return consumerVersion;
+	}
 
-    public String getProducerVersion() {
-        return producerVersion;
-    }
+	public String getProducerVersion() {
+		return producerVersion;
+	}
 
-    public Integer getNumericResult() {
-        return numericResult;
-    }
+	public Integer getNumericResult() {
+		return numericResult;
+	}
 
-    public String getOperatorResult() {
-        return operatorResult;
-    }
+	public String getOperatorResult() {
+		return operatorResult;
+	}
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
-    }
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this, RecursiveToStringStyle.JSON_STYLE);
+	}
 
 }

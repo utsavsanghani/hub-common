@@ -27,80 +27,74 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
-import com.blackducksoftware.integration.hub.api.policy.PolicyRule;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
+import io.swagger.client.model.PolicyRuleView;
+
 public class ListProcessorCacheTest {
 
-    private final EventTestUtil testUtil = new EventTestUtil();
+	private final EventTestUtil testUtil = new EventTestUtil();
 
-    @Test
-    public void testEventAdd() throws Exception {
-        final PolicyViolationContentItem item = testUtil.createPolicyViolation(new Date(), EventTestUtil.PROJECT_NAME, EventTestUtil.PROJECT_VERSION_NAME,
-                EventTestUtil.COMPONENT,
-                EventTestUtil.VERSION);
-        final PolicyRule policyRule = item.getPolicyRuleList().get(0);
-        final Map<String, Object> dataSet = new HashMap<>();
-        dataSet.put("policyRule", policyRule);
-        final NotificationEvent event = new NotificationEvent("1", NotificationCategoryEnum.POLICY_VIOLATION,
-                dataSet);
+	@Test
+	public void testEventAdd() throws Exception {
+		final PolicyViolationContentItem item = testUtil.createPolicyViolation(new DateTime(), EventTestUtil.PROJECT_NAME, EventTestUtil.PROJECT_VERSION_NAME, EventTestUtil.COMPONENT, EventTestUtil.VERSION);
+		final PolicyRuleView policyRule = item.getPolicyRuleList().get(0);
+		final Map<String, Object> dataSet = new HashMap<>();
+		dataSet.put("policyRule", policyRule);
+		final NotificationEvent event = new NotificationEvent("1", NotificationCategoryEnum.POLICY_VIOLATION, dataSet);
 
-        final List<NotificationEvent> eventList = new ArrayList<>();
-        final ListProcessorCache cache = new ListProcessorCache();
-        eventList.add(event);
-        eventList.add(event);
-        eventList.add(event);
+		final List<NotificationEvent> eventList = new ArrayList<>();
+		final ListProcessorCache cache = new ListProcessorCache();
+		eventList.add(event);
+		eventList.add(event);
+		eventList.add(event);
 
-        cache.addEvent(event);
-        cache.addEvent(event);
-        cache.addEvent(event);
-        assertEquals(eventList.size(), cache.getEvents().size());
-        int index = 0;
-        for (final NotificationEvent cachedEvent : cache.getEvents()) {
-            assertEquals(eventList.get(index), cachedEvent);
-            index++;
-        }
-    }
+		cache.addEvent(event);
+		cache.addEvent(event);
+		cache.addEvent(event);
+		assertEquals(eventList.size(), cache.getEvents().size());
+		int index = 0;
+		for (final NotificationEvent cachedEvent : cache.getEvents()) {
+			assertEquals(eventList.get(index), cachedEvent);
+			index++;
+		}
+	}
 
-    @Test
-    public void testEventRemove() throws Exception {
-        final PolicyViolationContentItem item = testUtil.createPolicyViolation(new Date(), EventTestUtil.PROJECT_NAME, EventTestUtil.PROJECT_VERSION_NAME,
-                EventTestUtil.COMPONENT,
-                EventTestUtil.VERSION);
-        final PolicyRule policyRule = item.getPolicyRuleList().get(0);
-        final Map<String, Object> dataSet = new HashMap<>();
-        dataSet.put("policyRule", policyRule);
-        final NotificationEvent event = new NotificationEvent("1", NotificationCategoryEnum.POLICY_VIOLATION,
-                dataSet);
-        final NotificationEvent removeEvent = new NotificationEvent("1", NotificationCategoryEnum.POLICY_VIOLATION,
-                dataSet);
-        final List<NotificationEvent> eventList = new ArrayList<>();
-        final ListProcessorCache cache = new ListProcessorCache();
-        eventList.add(event);
-        eventList.add(event);
-        eventList.add(removeEvent);
-        eventList.add(event);
+	@Test
+	public void testEventRemove() throws Exception {
+		final PolicyViolationContentItem item = testUtil.createPolicyViolation(new DateTime(), EventTestUtil.PROJECT_NAME, EventTestUtil.PROJECT_VERSION_NAME, EventTestUtil.COMPONENT, EventTestUtil.VERSION);
+		final PolicyRuleView policyRule = item.getPolicyRuleList().get(0);
+		final Map<String, Object> dataSet = new HashMap<>();
+		dataSet.put("policyRule", policyRule);
+		final NotificationEvent event = new NotificationEvent("1", NotificationCategoryEnum.POLICY_VIOLATION, dataSet);
+		final NotificationEvent removeEvent = new NotificationEvent("1", NotificationCategoryEnum.POLICY_VIOLATION, dataSet);
+		final List<NotificationEvent> eventList = new ArrayList<>();
+		final ListProcessorCache cache = new ListProcessorCache();
+		eventList.add(event);
+		eventList.add(event);
+		eventList.add(removeEvent);
+		eventList.add(event);
 
-        cache.addEvent(event);
-        cache.addEvent(event);
-        cache.addEvent(removeEvent);
-        cache.addEvent(event);
-        cache.removeEvent(removeEvent);
-        assertEquals(eventList.size() - 1, cache.getEvents().size());
-        boolean found = false;
-        for (final NotificationEvent cachedEvent : cache.getEvents()) {
-            if (cachedEvent.equals(removeEvent)) {
-                found = true;
-            }
-        }
-        assertFalse(found);
-    }
+		cache.addEvent(event);
+		cache.addEvent(event);
+		cache.addEvent(removeEvent);
+		cache.addEvent(event);
+		cache.removeEvent(removeEvent);
+		assertEquals(eventList.size() - 1, cache.getEvents().size());
+		boolean found = false;
+		for (final NotificationEvent cachedEvent : cache.getEvents()) {
+			if (cachedEvent.equals(removeEvent)) {
+				found = true;
+			}
+		}
+		assertFalse(found);
+	}
 }

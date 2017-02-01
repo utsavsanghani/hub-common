@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.user.UserItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -46,65 +45,68 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class NotificationRequestService extends HubParameterizedRequestService<NotificationItem> {
-    private static final List<String> NOTIFICATIONS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_NOTIFICATIONS);
+import io.swagger.client.model.NotificationView;
+import io.swagger.client.model.UserView;
 
-    private final Map<String, Class<? extends NotificationItem>> typeMap = new HashMap<>();
+public class NotificationRequestService extends HubParameterizedRequestService<NotificationView> {
+	private static final List<String> NOTIFICATIONS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_NOTIFICATIONS);
 
-    private final MetaService metaService;
+	private final Map<String, Class<? extends NotificationView>> typeMap = new HashMap<>();
 
-    public NotificationRequestService(final IntLogger logger, final RestConnection restConnection, final MetaService metaService) {
-        super(restConnection, NotificationItem.class);
-        this.metaService = metaService;
-        typeMap.put("VULNERABILITY", VulnerabilityNotificationItem.class);
-        typeMap.put("RULE_VIOLATION", RuleViolationNotificationItem.class);
-        typeMap.put("POLICY_OVERRIDE", PolicyOverrideNotificationItem.class);
-        typeMap.put("RULE_VIOLATION_CLEARED", RuleViolationClearedNotificationItem.class);
-    }
+	private final MetaService metaService;
 
-    public List<NotificationItem> getAllNotifications(final Date startDate, final Date endDate) throws HubIntegrationException {
-        final SimpleDateFormat sdf = new SimpleDateFormat(RestConnection.JSON_DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        final String startDateString = sdf.format(startDate);
-        final String endDateString = sdf.format(endDate);
+	public NotificationRequestService(final IntLogger logger, final RestConnection restConnection, final MetaService metaService) {
+		super(restConnection, NotificationView.class);
+		this.metaService = metaService;
+		typeMap.put("VULNERABILITY", VulnerabilityNotificationItem.class);
+		typeMap.put("RULE_VIOLATION", RuleViolationNotificationItem.class);
+		typeMap.put("POLICY_OVERRIDE", PolicyOverrideNotificationItem.class);
+		typeMap.put("RULE_VIOLATION_CLEARED", RuleViolationClearedNotificationItem.class);
+	}
 
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(100, NOTIFICATIONS_SEGMENTS);
-        hubPagedRequest.addQueryParameter("startDate", startDateString);
-        hubPagedRequest.addQueryParameter("endDate", endDateString);
+	public List<NotificationView> getAllNotifications(final Date startDate, final Date endDate) throws HubIntegrationException {
+		final SimpleDateFormat sdf = new SimpleDateFormat(RestConnection.JSON_DATE_FORMAT);
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		final String startDateString = sdf.format(startDate);
+		final String endDateString = sdf.format(endDate);
 
-        final List<NotificationItem> allNotificationItems = getAllItems(hubPagedRequest);
-        return allNotificationItems;
-    }
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(100, NOTIFICATIONS_SEGMENTS);
+		hubPagedRequest.addQueryParameter("startDate", startDateString);
+		hubPagedRequest.addQueryParameter("endDate", endDateString);
 
-    public List<NotificationItem> getUserNotifications(final Date startDate, final Date endDate, final UserItem user) throws HubIntegrationException {
-        final SimpleDateFormat sdf = new SimpleDateFormat(RestConnection.JSON_DATE_FORMAT);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        final String startDateString = sdf.format(startDate);
-        final String endDateString = sdf.format(endDate);
-        final String url = metaService.getFirstLink(user, MetaService.NOTIFICATIONS_LINK);
+		final List<NotificationView> allNotificationItems = getAllItems(hubPagedRequest);
+		return allNotificationItems;
+	}
 
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(100, url);
-        hubPagedRequest.addQueryParameter("startDate", startDateString);
-        hubPagedRequest.addQueryParameter("endDate", endDateString);
+	public List<NotificationView> getUserNotifications(final Date startDate, final Date endDate, final UserView user) throws HubIntegrationException {
+		final SimpleDateFormat sdf = new SimpleDateFormat(RestConnection.JSON_DATE_FORMAT);
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		final String startDateString = sdf.format(startDate);
+		final String endDateString = sdf.format(endDate);
+		final String url = metaService.getFirstLink(user, MetaService.NOTIFICATIONS_LINK);
 
-        final List<NotificationItem> allNotificationItems = getAllItems(hubPagedRequest);
-        return allNotificationItems;
-    }
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(100, url);
+		hubPagedRequest.addQueryParameter("startDate", startDateString);
+		hubPagedRequest.addQueryParameter("endDate", endDateString);
 
-    @Override
-    public List<NotificationItem> getItems(final JsonObject jsonObject) {
-        final JsonArray jsonArray = jsonObject.get("items").getAsJsonArray();
-        final List<NotificationItem> allNotificationItems = new ArrayList<>(jsonArray.size());
-        for (final JsonElement jsonElement : jsonArray) {
-            final String type = jsonElement.getAsJsonObject().get("type").getAsString();
-            Class<? extends NotificationItem> clazz = NotificationItem.class;
-            if (typeMap.containsKey(type)) {
-                clazz = typeMap.get(type);
-            }
-            allNotificationItems.add(getRestConnection().getGson().fromJson(jsonElement, clazz));
-        }
+		final List<NotificationView> allNotificationItems = getAllItems(hubPagedRequest);
+		return allNotificationItems;
+	}
 
-        return allNotificationItems;
-    }
+	@Override
+	public List<NotificationView> getItems(final JsonObject jsonObject) {
+		final JsonArray jsonArray = jsonObject.get("items").getAsJsonArray();
+		final List<NotificationView> allNotificationItems = new ArrayList<>(jsonArray.size());
+		for (final JsonElement jsonElement : jsonArray) {
+			final String type = jsonElement.getAsJsonObject().get("type").getAsString();
+			Class<? extends NotificationView> clazz = NotificationView.class;
+			if (typeMap.containsKey(type)) {
+				clazz = typeMap.get(type);
+			}
+			allNotificationItems.add(getRestConnection().getGson().fromJson(jsonElement, clazz));
+		}
+
+		return allNotificationItems;
+	}
 
 }

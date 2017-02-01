@@ -28,72 +28,72 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
-import com.blackducksoftware.integration.hub.api.item.HubItem;
+import io.swagger.client.model.HubView;
 
-public class PolicyStatusItem extends HubItem {
-    private PolicyStatusEnum overallStatus;
+public class PolicyStatusItem extends HubView {
+	private PolicyStatusEnum overallStatus;
 
-    private String updatedAt;
+	private String updatedAt;
 
-    private List<ComponentVersionStatusCount> componentVersionStatusCounts;
+	private List<ComponentVersionStatusCount> componentVersionStatusCounts;
 
-    public ComponentVersionStatusCount getCountInViolation() {
-        if (componentVersionStatusCounts == null || componentVersionStatusCounts.isEmpty()) {
-            return null;
-        }
-        for (ComponentVersionStatusCount count : componentVersionStatusCounts) {
-            if (PolicyStatusEnum.IN_VIOLATION == count.getName()) {
-                return count;
-            }
-        }
-        return null;
-    }
+	public ComponentVersionStatusCount getCountInViolation() {
+		if (componentVersionStatusCounts == null || componentVersionStatusCounts.isEmpty()) {
+			return null;
+		}
+		for (ComponentVersionStatusCount count : componentVersionStatusCounts) {
+			if (PolicyStatusEnum.IN_VIOLATION == count.getName()) {
+				return count;
+			}
+		}
+		return null;
+	}
 
-    public ComponentVersionStatusCount getCountNotInViolation() {
-        if (componentVersionStatusCounts == null || componentVersionStatusCounts.isEmpty()) {
-            return null;
-        }
-        for (ComponentVersionStatusCount count : componentVersionStatusCounts) {
-            if (PolicyStatusEnum.NOT_IN_VIOLATION == count.getName()) {
-                return count;
-            }
-        }
-        return null;
-    }
+	public ComponentVersionStatusCount getCountNotInViolation() {
+		if (componentVersionStatusCounts == null || componentVersionStatusCounts.isEmpty()) {
+			return null;
+		}
+		for (ComponentVersionStatusCount count : componentVersionStatusCounts) {
+			if (PolicyStatusEnum.NOT_IN_VIOLATION == count.getName()) {
+				return count;
+			}
+		}
+		return null;
+	}
 
-    public ComponentVersionStatusCount getCountInViolationOverridden() {
-        if (componentVersionStatusCounts == null || componentVersionStatusCounts.isEmpty()) {
-            return null;
-        }
-        for (ComponentVersionStatusCount count : componentVersionStatusCounts) {
-            if (PolicyStatusEnum.IN_VIOLATION_OVERRIDDEN == count.getName()) {
-                return count;
-            }
-        }
-        return null;
-    }
+	public ComponentVersionStatusCount getCountInViolationOverridden() {
+		if (componentVersionStatusCounts == null || componentVersionStatusCounts.isEmpty()) {
+			return null;
+		}
+		for (ComponentVersionStatusCount count : componentVersionStatusCounts) {
+			if (PolicyStatusEnum.IN_VIOLATION_OVERRIDDEN == count.getName()) {
+				return count;
+			}
+		}
+		return null;
+	}
 
-    public DateTime getUpdatedAtTime() {
-        if (StringUtils.isBlank(updatedAt)) {
-            return null;
-        }
-        try {
-            return new DateTime(updatedAt);
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
+	public DateTime getUpdatedAtTime() {
+		if (StringUtils.isBlank(updatedAt)) {
+			return null;
+		}
+		try {
+			return new DateTime(updatedAt);
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+	}
 
-    public PolicyStatusEnum getOverallStatus() {
-        return overallStatus;
-    }
+	public PolicyStatusEnum getOverallStatus() {
+		return overallStatus;
+	}
 
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
+	public String getUpdatedAt() {
+		return updatedAt;
+	}
 
-    public List<ComponentVersionStatusCount> getComponentVersionStatusCounts() {
-        return componentVersionStatusCounts;
-    }
+	public List<ComponentVersionStatusCount> getComponentVersionStatusCounts() {
+		return componentVersionStatusCounts;
+	}
 
 }

@@ -27,52 +27,52 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.api.policy.PolicyStatusItem;
-import com.blackducksoftware.integration.hub.api.project.ProjectItem;
 import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
-import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionItem;
 import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 
+import io.swagger.client.model.ProjectVersionView;
+import io.swagger.client.model.ProjectView;
+
 public class PolicyStatusDataService extends HubRequestService {
-    private final ProjectRequestService projectRequestService;
+	private final ProjectRequestService projectRequestService;
 
-    private final ProjectVersionRequestService projectVersionRequestService;
+	private final ProjectVersionRequestService projectVersionRequestService;
 
-    private final HubRequestService hubRequestService;
+	private final HubRequestService hubRequestService;
 
-    private final MetaService metaService;
+	private final MetaService metaService;
 
-    public PolicyStatusDataService(final RestConnection restConnection, final ProjectRequestService projectRequestService,
-            final ProjectVersionRequestService projectVersionRequestService, final HubRequestService hubRequestService, final MetaService metaService) {
-        super(restConnection);
-        this.metaService = metaService;
-        this.projectRequestService = projectRequestService;
-        this.projectVersionRequestService = projectVersionRequestService;
-        this.hubRequestService = hubRequestService;
-    }
+	public PolicyStatusDataService(final RestConnection restConnection, final ProjectRequestService projectRequestService, final ProjectVersionRequestService projectVersionRequestService, final HubRequestService hubRequestService,
+			final MetaService metaService) {
+		super(restConnection);
+		this.metaService = metaService;
+		this.projectRequestService = projectRequestService;
+		this.projectVersionRequestService = projectVersionRequestService;
+		this.hubRequestService = hubRequestService;
+	}
 
-    public PolicyStatusItem getPolicyStatusForProjectAndVersion(final String projectName,
-            final String projectVersionName) throws HubIntegrationException {
-        final ProjectItem projectItem = projectRequestService.getProjectByName(projectName);
-        final String versionsUrl = metaService.getFirstLink(projectItem, MetaService.VERSIONS_LINK);
+	public PolicyStatusItem getPolicyStatusForProjectAndVersion(final String projectName, final String projectVersionName) throws HubIntegrationException {
+		final ProjectView projectItem = projectRequestService.getProjectByName(projectName);
+		final String versionsUrl = metaService.getFirstLink(projectItem, MetaService.VERSIONS_LINK);
 
-        final List<ProjectVersionItem> projectVersions = projectVersionRequestService.getAllProjectVersions(versionsUrl);
-        final String policyStatusUrl = findPolicyStatusUrl(projectVersions, projectVersionName);
+		final List<ProjectVersionView> projectVersions = projectVersionRequestService.getAllProjectVersions(versionsUrl);
+		final String policyStatusUrl = findPolicyStatusUrl(projectVersions, projectVersionName);
 
-        return hubRequestService.getItem(policyStatusUrl, PolicyStatusItem.class);
-    }
+		return hubRequestService.getItem(policyStatusUrl, PolicyStatusItem.class);
+	}
 
-    private String findPolicyStatusUrl(final List<ProjectVersionItem> projectVersions, final String projectVersionName) throws HubIntegrationException {
-        for (final ProjectVersionItem version : projectVersions) {
-            if (projectVersionName.equals(version.getVersionName())) {
-                final String policyStatusLink = metaService.getFirstLink(version, MetaService.POLICY_STATUS_LINK);
-                return policyStatusLink;
-            }
-        }
+	private String findPolicyStatusUrl(final List<ProjectVersionView> projectVersions, final String projectVersionName) throws HubIntegrationException {
+		for (final ProjectVersionView version : projectVersions) {
+			if (projectVersionName.equals(version.getVersionName())) {
+				final String policyStatusLink = metaService.getFirstLink(version, MetaService.POLICY_STATUS_LINK);
+				return policyStatusLink;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 }

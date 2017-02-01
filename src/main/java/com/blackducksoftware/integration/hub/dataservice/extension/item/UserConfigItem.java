@@ -26,23 +26,24 @@ package com.blackducksoftware.integration.hub.dataservice.extension.item;
 import java.util.Map;
 
 import com.blackducksoftware.integration.hub.api.extension.ConfigurationItem;
-import com.blackducksoftware.integration.hub.api.user.UserItem;
+
+import io.swagger.client.model.UserView;
 
 public class UserConfigItem {
-    private final UserItem user;
+	private final UserView user;
 
-    private final Map<String, ConfigurationItem> configMap;
+	private final Map<String, ConfigurationItem> configMap;
 
-    public UserConfigItem(final UserItem user, final Map<String, ConfigurationItem> configItems) {
-        this.user = user;
-        this.configMap = configItems;
-    }
+	public UserConfigItem(final UserView user, final Map<String, ConfigurationItem> configItems) {
+		this.user = user;
+		this.configMap = configItems;
+	}
 
-    public UserItem getUser() {
-        return user;
-    }
+	public UserView getUser() {
+		return user;
+	}
 
-    public Map<String, ConfigurationItem> getConfigMap() {
-        return configMap;
-    }
+	public Map<String, ConfigurationItem> getConfigMap() {
+		return configMap;
+	}
 }

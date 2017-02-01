@@ -27,123 +27,119 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.blackducksoftware.integration.hub.api.component.version.ComponentVersion;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.notification.NotificationItem;
 import com.blackducksoftware.integration.hub.api.notification.NotificationRequestService;
 import com.blackducksoftware.integration.hub.api.policy.PolicyRequestService;
-import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionItem;
 import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
 import com.blackducksoftware.integration.hub.api.version.VersionBomPolicyRequestService;
 import com.blackducksoftware.integration.hub.dataservice.ItemTransform;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersion;
+import com.blackducksoftware.integration.hub.dataservice.notification.model.FullProjectVersionView;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.exception.HubItemTransformException;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 
-public abstract class AbstractNotificationTransformer
-        implements ItemTransform<List<NotificationContentItem>, NotificationItem> {
-    private final NotificationRequestService notificationService;
+import io.swagger.client.model.ComponentVersionView;
+import io.swagger.client.model.NotificationView;
+import io.swagger.client.model.ProjectVersionView;
 
-    private final ProjectVersionRequestService projectVersionService;
+public abstract class AbstractNotificationTransformer implements ItemTransform<List<NotificationContentItem>, NotificationView> {
+	private final NotificationRequestService notificationService;
 
-    private final PolicyRequestService policyService;
+	private final ProjectVersionRequestService projectVersionService;
 
-    private final VersionBomPolicyRequestService bomVersionPolicyService;
+	private final PolicyRequestService policyService;
 
-    private final HubRequestService hubRequestService;
+	private final VersionBomPolicyRequestService bomVersionPolicyService;
 
-    private final MetaService metaService;
+	private final HubRequestService hubRequestService;
 
-    public AbstractNotificationTransformer(final NotificationRequestService notificationService,
-            final ProjectVersionRequestService projectVersionService, final PolicyRequestService policyService,
-            final VersionBomPolicyRequestService bomVersionPolicyService, final HubRequestService hubRequestService,
-            final MetaService metaService) {
-        this.notificationService = notificationService;
-        this.projectVersionService = projectVersionService;
-        this.policyService = policyService;
-        this.bomVersionPolicyService = bomVersionPolicyService;
-        this.hubRequestService = hubRequestService;
-        this.metaService = metaService;
-    }
+	private final MetaService metaService;
 
-    public NotificationRequestService getNotificationService() {
-        return notificationService;
-    }
+	public AbstractNotificationTransformer(final NotificationRequestService notificationService, final ProjectVersionRequestService projectVersionService, final PolicyRequestService policyService,
+			final VersionBomPolicyRequestService bomVersionPolicyService, final HubRequestService hubRequestService, final MetaService metaService) {
+		this.notificationService = notificationService;
+		this.projectVersionService = projectVersionService;
+		this.policyService = policyService;
+		this.bomVersionPolicyService = bomVersionPolicyService;
+		this.hubRequestService = hubRequestService;
+		this.metaService = metaService;
+	}
 
-    public ProjectVersionRequestService getProjectVersionService() {
-        return projectVersionService;
-    }
+	public NotificationRequestService getNotificationService() {
+		return notificationService;
+	}
 
-    public PolicyRequestService getPolicyService() {
-        return policyService;
-    }
+	public ProjectVersionRequestService getProjectVersionService() {
+		return projectVersionService;
+	}
 
-    public VersionBomPolicyRequestService getBomVersionPolicyService() {
-        return bomVersionPolicyService;
-    }
+	public PolicyRequestService getPolicyService() {
+		return policyService;
+	}
 
-    public HubRequestService getHubRequestService() {
-        return hubRequestService;
-    }
+	public VersionBomPolicyRequestService getBomVersionPolicyService() {
+		return bomVersionPolicyService;
+	}
 
-    @Override
-    public abstract List<NotificationContentItem> transform(NotificationItem item) throws HubItemTransformException;
+	public HubRequestService getHubRequestService() {
+		return hubRequestService;
+	}
 
-    protected ProjectVersion createFullProjectVersion(final String projectVersionUrl, final String projectName, final String versionName)
-            throws HubIntegrationException {
-        ProjectVersionItem item;
-        try {
-            item = getHubRequestService().getItem(projectVersionUrl, ProjectVersionItem.class);
-        } catch (final HubIntegrationException e) {
-            final String msg = "Error getting the full ProjectVersion for this affected project version URL: "
-                    + projectVersionUrl + ": " + e.getMessage();
-            throw new HubIntegrationException(msg, e);
-        }
-        final ProjectVersion fullProjectVersion = new ProjectVersion();
-        fullProjectVersion.setProjectName(projectName);
-        fullProjectVersion.setProjectVersionName(versionName);
-        fullProjectVersion.setDistribution(item.getDistribution());
-        fullProjectVersion.setLicense(item.getLicense());
-        fullProjectVersion.setNickname(item.getNickname());
-        fullProjectVersion.setPhase(item.getPhase());
-        fullProjectVersion.setReleaseComments(item.getReleaseComments());
-        fullProjectVersion.setReleasedOn(item.getReleasedOn());
-        fullProjectVersion.setSource(item.getSource());
+	@Override
+	public abstract List<NotificationContentItem> transform(NotificationView item) throws HubItemTransformException;
 
-        fullProjectVersion.setUrl(metaService.getHref(item));
-        fullProjectVersion.setCodeLocationsLink((metaService.getFirstLinkSafely(item, MetaService.CODE_LOCATION_LINK)));
-        fullProjectVersion.setComponentsLink((metaService.getFirstLinkSafely(item, MetaService.COMPONENTS_LINK)));
-        fullProjectVersion.setPolicyStatusLink((metaService.getFirstLinkSafely(item, MetaService.POLICY_STATUS_LINK)));
-        fullProjectVersion.setProjectLink((metaService.getFirstLinkSafely(item, MetaService.PROJECT_LINK)));
-        fullProjectVersion.setRiskProfileLink((metaService.getFirstLinkSafely(item, MetaService.RISK_PROFILE_LINK)));
-        fullProjectVersion.setVersionReportLink((metaService.getFirstLinkSafely(item, MetaService.VERSION_REPORT_LINK)));
-        fullProjectVersion.setVulnerableComponentsLink((metaService.getFirstLinkSafely(item, MetaService.VULNERABLE_COMPONENTS_LINK)));
+	protected FullProjectVersionView createFullProjectVersion(final String projectVersionUrl, final String projectName, final String versionName) throws HubIntegrationException {
+		ProjectVersionView item;
+		try {
+			item = getHubRequestService().getItem(projectVersionUrl, ProjectVersionView.class);
+		} catch (final HubIntegrationException e) {
+			final String msg = "Error getting the full ProjectVersion for this affected project version URL: " + projectVersionUrl + ": " + e.getMessage();
+			throw new HubIntegrationException(msg, e);
+		}
+		final FullProjectVersionView fullProjectVersion = new FullProjectVersionView();
+		fullProjectVersion.setProjectName(projectName);
+		fullProjectVersion.setProjectVersionName(versionName);
+		fullProjectVersion.setDistribution(item.getDistribution());
+		fullProjectVersion.setLicense(item.getLicense());
+		fullProjectVersion.setNickname(item.getNickname());
+		fullProjectVersion.setPhase(item.getPhase());
+		fullProjectVersion.setReleaseComments(item.getReleaseComments());
+		fullProjectVersion.setReleasedOn(item.getReleasedOn());
+		fullProjectVersion.setSource(item.getSource());
 
-        return fullProjectVersion;
-    }
+		fullProjectVersion.setUrl(metaService.getHref(item));
+		fullProjectVersion.setCodeLocationsLink((metaService.getFirstLinkSafely(item, MetaService.CODE_LOCATION_LINK)));
+		fullProjectVersion.setComponentsLink((metaService.getFirstLinkSafely(item, MetaService.COMPONENTS_LINK)));
+		fullProjectVersion.setPolicyStatusLink((metaService.getFirstLinkSafely(item, MetaService.POLICY_STATUS_LINK)));
+		fullProjectVersion.setProjectLink((metaService.getFirstLinkSafely(item, MetaService.PROJECT_LINK)));
+		fullProjectVersion.setRiskProfileLink((metaService.getFirstLinkSafely(item, MetaService.RISK_PROFILE_LINK)));
+		fullProjectVersion.setVersionReportLink((metaService.getFirstLinkSafely(item, MetaService.VERSION_REPORT_LINK)));
+		fullProjectVersion.setVulnerableComponentsLink((metaService.getFirstLinkSafely(item, MetaService.VULNERABLE_COMPONENTS_LINK)));
 
-    public MetaService getMetaService() {
-        return metaService;
-    }
+		return fullProjectVersion;
+	}
 
-    protected ComponentVersion getComponentVersion(final String componentVersionLink) throws HubIntegrationException {
-        ComponentVersion componentVersion = null;
-        if (!StringUtils.isBlank(componentVersionLink)) {
-            componentVersion = getHubRequestService().getItem(componentVersionLink, ComponentVersion.class);
-        }
-        return componentVersion;
-    }
+	public MetaService getMetaService() {
+		return metaService;
+	}
 
-    protected String getComponentVersionName(final String componentVersionLink) throws HubIntegrationException {
-        String componentVersionName = "";
-        if (!StringUtils.isBlank(componentVersionLink)) {
-            final ComponentVersion compVersion = getComponentVersion(componentVersionLink);
-            if (compVersion != null) {
-                componentVersionName = compVersion.getVersionName();
-            }
-        }
-        return componentVersionName;
-    }
+	protected ComponentVersionView getComponentVersion(final String componentVersionLink) throws HubIntegrationException {
+		ComponentVersionView componentVersion = null;
+		if (!StringUtils.isBlank(componentVersionLink)) {
+			componentVersion = getHubRequestService().getItem(componentVersionLink, ComponentVersionView.class);
+		}
+		return componentVersion;
+	}
+
+	protected String getComponentVersionName(final String componentVersionLink) throws HubIntegrationException {
+		String componentVersionName = "";
+		if (!StringUtils.isBlank(componentVersionLink)) {
+			final ComponentVersionView compVersion = getComponentVersion(componentVersionLink);
+			if (compVersion != null) {
+				componentVersionName = compVersion.getVersionName();
+			}
+		}
+		return componentVersionName;
+	}
 }

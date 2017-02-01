@@ -23,11 +23,13 @@
  */
 package com.blackducksoftware.integration.hub.api.notification;
 
-public class PolicyOverrideNotificationItem extends NotificationItem {
-    private PolicyOverrideNotificationContent content;
+import io.swagger.client.model.NotificationView;
 
-    public PolicyOverrideNotificationContent getContent() {
-        return content;
-    }
+public class PolicyOverrideNotificationItem extends NotificationView {
+	private PolicyOverrideNotificationContent content;
+
+	public PolicyOverrideNotificationContent getContent() {
+		return content;
+	}
 
 }

@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.api.item.HubPagedResponse;
-import com.blackducksoftware.integration.hub.api.item.HubResponse;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.request.HubRequest;
@@ -37,80 +36,82 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class HubParameterizedRequestService<T extends HubResponse> extends HubRequestService {
-    private final Class<T> clazz;
+import io.swagger.client.model.HubView;
 
-    public HubParameterizedRequestService(final RestConnection restConnection, final Class<T> clazz) {
-        super(restConnection);
-        this.clazz = clazz;
-    }
+public class HubParameterizedRequestService<T extends HubView> extends HubRequestService {
+	private final Class<T> clazz;
 
-    public HubPagedResponse<T> getPagedResponse(final HubPagedRequest hubPagedRequest) throws HubIntegrationException {
-        final JsonObject jsonObject = hubPagedRequest.executeGetForResponseJson();
-        final int totalCount = jsonObject.get("totalCount").getAsInt();
-        final List<T> items = getItems(jsonObject);
-        return new HubPagedResponse<>(totalCount, items);
-    }
+	public HubParameterizedRequestService(final RestConnection restConnection, final Class<T> clazz) {
+		super(restConnection);
+		this.clazz = clazz;
+	}
 
-    public List<T> getItems(final HubPagedRequest hubPagedRequest) throws HubIntegrationException {
-        final JsonObject jsonObject = hubPagedRequest.executeGetForResponseJson();
-        final List<T> items = getItems(jsonObject);
-        return items;
-    }
+	public HubPagedResponse<T> getPagedResponse(final HubPagedRequest hubPagedRequest) throws HubIntegrationException {
+		final JsonObject jsonObject = hubPagedRequest.executeGetForResponseJson();
+		final int totalCount = jsonObject.get("totalCount").getAsInt();
+		final List<T> items = getItems(jsonObject);
+		return new HubPagedResponse<>(totalCount, items);
+	}
 
-    /**
-     * This method can be overridden by subclasses to provide special treatment for extracting the items from the
-     * jsonObject.
-     */
-    public List<T> getItems(final JsonObject jsonObject) {
-        final LinkedList<T> itemList = new LinkedList<>();
-        final JsonElement itemsElement = jsonObject.get("items");
-        final JsonArray itemsArray = itemsElement.getAsJsonArray();
-        final int count = itemsArray.size();
-        for (int index = 0; index < count; index++) {
-            final JsonElement element = itemsArray.get(index);
-            final T item = getItem(element, clazz);
-            itemList.add(item);
-        }
-        return itemList;
-    }
+	public List<T> getItems(final HubPagedRequest hubPagedRequest) throws HubIntegrationException {
+		final JsonObject jsonObject = hubPagedRequest.executeGetForResponseJson();
+		final List<T> items = getItems(jsonObject);
+		return items;
+	}
 
-    public List<T> getAllItems(final HubPagedRequest hubPagedRequest) throws HubIntegrationException {
-        final List<T> allItems = new ArrayList<>();
+	/**
+	 * This method can be overridden by subclasses to provide special treatment for extracting the items from the
+	 * jsonObject.
+	 */
+	public List<T> getItems(final JsonObject jsonObject) {
+		final LinkedList<T> itemList = new LinkedList<>();
+		final JsonElement itemsElement = jsonObject.get("items");
+		final JsonArray itemsArray = itemsElement.getAsJsonArray();
+		final int count = itemsArray.size();
+		for (int index = 0; index < count; index++) {
+			final JsonElement element = itemsArray.get(index);
+			final T item = getItem(element, clazz);
+			itemList.add(item);
+		}
+		return itemList;
+	}
 
-        final HubPagedResponse<T> firstPage = getPagedResponse(hubPagedRequest);
-        final int totalCount = firstPage.getTotalCount();
-        final List<T> items = firstPage.getItems();
-        allItems.addAll(items);
+	public List<T> getAllItems(final HubPagedRequest hubPagedRequest) throws HubIntegrationException {
+		final List<T> allItems = new ArrayList<>();
 
-        while (allItems.size() < totalCount) {
-            final int currentOffset = hubPagedRequest.getOffset();
-            final int increasedOffset = currentOffset + items.size();
+		final HubPagedResponse<T> firstPage = getPagedResponse(hubPagedRequest);
+		final int totalCount = firstPage.getTotalCount();
+		final List<T> items = firstPage.getItems();
+		allItems.addAll(items);
 
-            hubPagedRequest.setOffset(increasedOffset);
-            final HubPagedResponse<T> nextPage = getPagedResponse(hubPagedRequest);
-            allItems.addAll(nextPage.getItems());
-        }
+		while (allItems.size() < totalCount) {
+			final int currentOffset = hubPagedRequest.getOffset();
+			final int increasedOffset = currentOffset + items.size();
 
-        return allItems;
-    }
+			hubPagedRequest.setOffset(increasedOffset);
+			final HubPagedResponse<T> nextPage = getPagedResponse(hubPagedRequest);
+			allItems.addAll(nextPage.getItems());
+		}
 
-    public List<T> getAllItems(final List<String> urlSegments) throws HubIntegrationException {
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(urlSegments);
-        return getAllItems(hubPagedRequest);
-    }
+		return allItems;
+	}
 
-    public List<T> getAllItems(final String url) throws HubIntegrationException {
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(url);
-        return getAllItems(hubPagedRequest);
-    }
+	public List<T> getAllItems(final List<String> urlSegments) throws HubIntegrationException {
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(urlSegments);
+		return getAllItems(hubPagedRequest);
+	}
 
-    public T getItem(final HubRequest hubRequest) throws HubIntegrationException {
-        return getItem(hubRequest, clazz);
-    }
+	public List<T> getAllItems(final String url) throws HubIntegrationException {
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(url);
+		return getAllItems(hubPagedRequest);
+	}
 
-    public T getItem(final String url) throws HubIntegrationException {
-        return getItem(url, clazz);
-    }
+	public T getItem(final HubRequest hubRequest) throws HubIntegrationException {
+		return getItem(hubRequest, clazz);
+	}
+
+	public T getItem(final String url) throws HubIntegrationException {
+		return getItem(url, clazz);
+	}
 
 }

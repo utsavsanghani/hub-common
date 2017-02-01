@@ -27,18 +27,14 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.api.component.version.ComponentVersion;
 import com.blackducksoftware.integration.hub.api.component.version.ComponentVersionStatus;
 import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.notification.NotificationItem;
 import com.blackducksoftware.integration.hub.api.notification.NotificationRequestService;
 import com.blackducksoftware.integration.hub.api.notification.RuleViolationClearedNotificationItem;
 import com.blackducksoftware.integration.hub.api.policy.PolicyRequestService;
-import com.blackducksoftware.integration.hub.api.policy.PolicyRule;
-import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionItem;
 import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
 import com.blackducksoftware.integration.hub.api.version.VersionBomPolicyRequestService;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersion;
+import com.blackducksoftware.integration.hub.dataservice.notification.model.FullProjectVersionView;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.NotificationContentItem;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyNotificationFilter;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationClearedContentItem;
@@ -46,92 +42,82 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.exception.HubItemTransformException;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 
+import io.swagger.client.model.ComponentVersionView;
+import io.swagger.client.model.NotificationView;
+import io.swagger.client.model.PolicyRuleView;
+import io.swagger.client.model.ProjectVersionView;
+
 public class PolicyViolationClearedTransformer extends AbstractPolicyTransformer {
-    public PolicyViolationClearedTransformer(final NotificationRequestService notificationService,
-            final ProjectVersionRequestService projectVersionService, final PolicyRequestService policyService,
-            final VersionBomPolicyRequestService bomVersionPolicyService,
-            final HubRequestService hubRequestService, final PolicyNotificationFilter policyFilter, final MetaService metaService) {
-        super(notificationService, projectVersionService, policyService, bomVersionPolicyService,
-                hubRequestService, policyFilter, metaService);
-    }
+	public PolicyViolationClearedTransformer(final NotificationRequestService notificationService, final ProjectVersionRequestService projectVersionService, final PolicyRequestService policyService,
+			final VersionBomPolicyRequestService bomVersionPolicyService, final HubRequestService hubRequestService, final PolicyNotificationFilter policyFilter, final MetaService metaService) {
+		super(notificationService, projectVersionService, policyService, bomVersionPolicyService, hubRequestService, policyFilter, metaService);
+	}
 
-    @Override
-    public List<NotificationContentItem> transform(final NotificationItem item) throws HubItemTransformException {
-        final List<NotificationContentItem> templateData = new ArrayList<>();
+	@Override
+	public List<NotificationContentItem> transform(final NotificationView item) throws HubItemTransformException {
+		final List<NotificationContentItem> templateData = new ArrayList<>();
 
-        final RuleViolationClearedNotificationItem policyViolation = (RuleViolationClearedNotificationItem) item;
-        final String projectName = policyViolation.getContent().getProjectName();
-        final List<ComponentVersionStatus> componentVersionList = policyViolation.getContent()
-                .getComponentVersionStatuses();
-        final String projectVersionLink = policyViolation.getContent().getProjectVersionLink();
-        ProjectVersionItem releaseItem;
-        try {
-            releaseItem = getReleaseItem(projectVersionLink);
-        } catch (final HubIntegrationException e1) {
-            throw new HubItemTransformException("Error getting release item while transforming notification " + item
-                    + "; projectVersionLink: " + projectVersionLink + ": " + e1.getMessage(), e1);
-        }
-        final ProjectVersion projectVersion = new ProjectVersion();
-        projectVersion.setProjectName(projectName);
-        projectVersion.setProjectVersionName(releaseItem.getVersionName());
-        projectVersion.setUrl(projectVersionLink);
+		final RuleViolationClearedNotificationItem policyViolation = (RuleViolationClearedNotificationItem) item;
+		final String projectName = policyViolation.getContent().getProjectName();
+		final List<ComponentVersionStatus> componentVersionList = policyViolation.getContent().getComponentVersionStatuses();
+		final String projectVersionLink = policyViolation.getContent().getProjectVersionLink();
+		ProjectVersionView releaseItem;
+		try {
+			releaseItem = getReleaseItem(projectVersionLink);
+		} catch (final HubIntegrationException e1) {
+			throw new HubItemTransformException("Error getting release item while transforming notification " + item + "; projectVersionLink: " + projectVersionLink + ": " + e1.getMessage(), e1);
+		}
+		final FullProjectVersionView projectVersion = new FullProjectVersionView();
+		projectVersion.setProjectName(projectName);
+		projectVersion.setProjectVersionName(releaseItem.getVersionName());
+		projectVersion.setUrl(projectVersionLink);
 
-        try {
-            handleNotification(componentVersionList, projectVersion, item, templateData);
-        } catch (final HubItemTransformException e) {
-            throw new HubItemTransformException("Error in handleNotification() while transforming notification " + item
-                    + "; projectVersionLink: " + projectVersionLink + ": " + e.getMessage(), e);
-        }
+		try {
+			handleNotification(componentVersionList, projectVersion, item, templateData);
+		} catch (final HubItemTransformException e) {
+			throw new HubItemTransformException("Error in handleNotification() while transforming notification " + item + "; projectVersionLink: " + projectVersionLink + ": " + e.getMessage(), e);
+		}
 
-        return templateData;
-    }
+		return templateData;
+	}
 
-    @Override
-    public void handleNotification(final List<ComponentVersionStatus> componentVersionList,
-            final ProjectVersion projectVersion, final NotificationItem item,
-            final List<NotificationContentItem> templateData) throws HubItemTransformException {
-        for (final ComponentVersionStatus componentVersion : componentVersionList) {
-            try {
-                final String componentVersionLink = componentVersion.getComponentVersionLink();
-                final ComponentVersion fullComponentVersion = getComponentVersion(componentVersionLink);
-                final List<String> policyUrls = componentVersion.getPolicies();
+	@Override
+	public void handleNotification(final List<ComponentVersionStatus> componentVersionList, final FullProjectVersionView projectVersion, final NotificationView item, final List<NotificationContentItem> templateData)
+			throws HubItemTransformException {
+		for (final ComponentVersionStatus componentVersion : componentVersionList) {
+			try {
+				final String componentVersionLink = componentVersion.getComponentVersionLink();
+				final ComponentVersionView fullComponentVersion = getComponentVersion(componentVersionLink);
+				final List<String> policyUrls = componentVersion.getPolicies();
 
-                if (policyUrls != null) {
-                    List<PolicyRule> ruleList = getRulesFromUrls(policyUrls);
+				if (policyUrls != null) {
+					List<PolicyRuleView> ruleList = getRulesFromUrls(policyUrls);
 
-                    ruleList = getMatchingRules(ruleList);
-                    if (ruleList != null && !ruleList.isEmpty()) {
-                        final List<PolicyRule> policyRuleList = new ArrayList<>();
-                        for (final PolicyRule rule : ruleList) {
-                            policyRuleList.add(rule);
-                        }
-                        createContents(projectVersion, componentVersion.getComponentName(), fullComponentVersion,
-                                componentVersion.getComponentLink(),
-                                componentVersion.getComponentVersionLink(),
-                                policyRuleList, item, templateData);
-                    }
-                }
-            } catch (final Exception e) {
-                throw new HubItemTransformException(e);
-            }
-        }
-    }
+					ruleList = getMatchingRules(ruleList);
+					if (ruleList != null && !ruleList.isEmpty()) {
+						final List<PolicyRuleView> policyRuleList = new ArrayList<>();
+						for (final PolicyRuleView rule : ruleList) {
+							policyRuleList.add(rule);
+						}
+						createContents(projectVersion, componentVersion.getComponentName(), fullComponentVersion, componentVersion.getComponentLink(), componentVersion.getComponentVersionLink(), policyRuleList, item, templateData);
+					}
+				}
+			} catch (final Exception e) {
+				throw new HubItemTransformException(e);
+			}
+		}
+	}
 
-    private ProjectVersionItem getReleaseItem(final String projectVersionLink) throws HubIntegrationException {
-        final ProjectVersionItem releaseItem = getProjectVersionService().getItem(projectVersionLink);
-        return releaseItem;
-    }
+	private ProjectVersionView getReleaseItem(final String projectVersionLink) throws HubIntegrationException {
+		final ProjectVersionView releaseItem = getProjectVersionService().getItem(projectVersionLink);
+		return releaseItem;
+	}
 
-    @Override
-    public void createContents(final ProjectVersion projectVersion, final String componentName,
-            final ComponentVersion componentVersion, final String componentUrl, final String componentVersionUrl,
-            final List<PolicyRule> policyRuleList, final NotificationItem item,
-            final List<NotificationContentItem> templateData) throws URISyntaxException {
-        final PolicyViolationClearedContentItem contentItem = new PolicyViolationClearedContentItem(item.getCreatedAt(),
-                projectVersion, componentName, componentVersion, componentUrl,
-                componentVersionUrl,
-                policyRuleList);
-        templateData.add(contentItem);
-    }
+	@Override
+	public void createContents(final FullProjectVersionView projectVersion, final String componentName, final ComponentVersionView componentVersion, final String componentUrl, final String componentVersionUrl,
+			final List<PolicyRuleView> policyRuleList, final NotificationView item, final List<NotificationContentItem> templateData) throws URISyntaxException {
+		final PolicyViolationClearedContentItem contentItem = new PolicyViolationClearedContentItem(item.getCreatedAt(), projectVersion, componentName, componentVersion, componentUrl, componentVersionUrl, policyRuleList);
+		templateData.add(contentItem);
+	}
 
 }

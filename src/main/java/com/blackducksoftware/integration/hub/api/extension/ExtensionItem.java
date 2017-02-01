@@ -23,31 +23,31 @@
  */
 package com.blackducksoftware.integration.hub.api.extension;
 
-import com.blackducksoftware.integration.hub.api.item.HubItem;
+import io.swagger.client.model.HubView;
 
-public class ExtensionItem extends HubItem {
+public class ExtensionItem extends HubView {
 
-    private String name;
+	private String name;
 
-    private String description;
+	private String description;
 
-    private String infoUrl;
+	private String infoUrl;
 
-    private Boolean authenticated;
+	private Boolean authenticated;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getInfoUrl() {
-        return infoUrl;
-    }
+	public String getInfoUrl() {
+		return infoUrl;
+	}
 
-    public boolean isAuthenticated() {
-        return authenticated;
-    }
+	public boolean isAuthenticated() {
+		return authenticated;
+	}
 }

@@ -23,18 +23,18 @@
  */
 package com.blackducksoftware.integration.hub.api.extension;
 
-import com.blackducksoftware.integration.hub.api.item.HubItem;
+import io.swagger.client.model.HubView;
 
-public class UserOptionLinkItem extends HubItem {
-    private String user;
+public class UserOptionLinkItem extends HubView {
+	private String user;
 
-    private String extensionOptions;
+	private String extensionOptions;
 
-    public String getUser() {
-        return user;
-    }
+	public String getUser() {
+		return user;
+	}
 
-    public String getExtensionOptions() {
-        return extensionOptions;
-    }
+	public String getExtensionOptions() {
+		return extensionOptions;
+	}
 }

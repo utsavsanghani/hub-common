@@ -30,17 +30,18 @@ import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
-public class VulnerableBomComponentRequestService extends HubParameterizedRequestService<VulnerableBomComponentItem> {
-    public VulnerableBomComponentRequestService(final RestConnection restConnection) {
-        super(restConnection, VulnerableBomComponentItem.class);
-    }
+import io.swagger.client.model.VulnerableComponentView;
 
-    public List<VulnerableBomComponentItem> getVulnerableComponentsMatchingComponentName(
-            final String vulnerableBomComponentsUrl, final String componentName) throws HubIntegrationException {
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(vulnerableBomComponentsUrl, componentName);
+public class VulnerableBomComponentRequestService extends HubParameterizedRequestService<VulnerableComponentView> {
+	public VulnerableBomComponentRequestService(final RestConnection restConnection) {
+		super(restConnection, VulnerableComponentView.class);
+	}
 
-        final List<VulnerableBomComponentItem> allItems = getAllItems(hubPagedRequest);
-        return allItems;
-    }
+	public List<VulnerableComponentView> getVulnerableComponentsMatchingComponentName(final String vulnerableBomComponentsUrl, final String componentName) throws HubIntegrationException {
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(vulnerableBomComponentsUrl, componentName);
+
+		final List<VulnerableComponentView> allItems = getAllItems(hubPagedRequest);
+		return allItems;
+	}
 
 }

@@ -23,11 +23,11 @@
  */
 package com.blackducksoftware.integration.hub.api.report;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import org.joda.time.DateTime;
+
 import com.blackducksoftware.integration.hub.api.item.MetaService;
-import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.request.HubRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
@@ -37,157 +37,157 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-public class ReportRequestService extends HubParameterizedRequestService<ReportInformationItem> {
-    public final static long DEFAULT_TIMEOUT = 1000 * 60 * 5;
+import io.swagger.client.model.ProjectVersionView;
+import io.swagger.client.model.ReportView;
 
-    private final IntLogger logger;
+public class ReportRequestService extends HubParameterizedRequestService<ReportView> {
+	public final static long DEFAULT_TIMEOUT = 1000 * 60 * 5;
 
-    private final MetaService metaService;
+	private final IntLogger logger;
 
-    private final long timeoutInMilliseconds;
+	private final MetaService metaService;
 
-    public ReportRequestService(final RestConnection restConnection, final IntLogger logger, final MetaService metaService) {
-        this(restConnection, logger, metaService, DEFAULT_TIMEOUT);
-    }
+	private final long timeoutInMilliseconds;
 
-    public ReportRequestService(final RestConnection restConnection, final IntLogger logger, final MetaService metaService, final long timeoutInMilliseconds) {
-        super(restConnection, ReportInformationItem.class);
-        this.logger = logger;
-        this.metaService = metaService;
+	public ReportRequestService(final RestConnection restConnection, final IntLogger logger, final MetaService metaService) {
+		this(restConnection, logger, metaService, DEFAULT_TIMEOUT);
+	}
 
-        long timeout = timeoutInMilliseconds;
-        if (timeoutInMilliseconds <= 0l) {
-            timeout = DEFAULT_TIMEOUT;
-            logger.alwaysLog(timeoutInMilliseconds + "ms is not a valid BOM wait time, using : " + timeout + "ms instead");
-        }
-        this.timeoutInMilliseconds = timeout;
-    }
+	public ReportRequestService(final RestConnection restConnection, final IntLogger logger, final MetaService metaService, final long timeoutInMilliseconds) {
+		super(restConnection, ReportView.class);
+		this.logger = logger;
+		this.metaService = metaService;
 
-    /**
-     * Generates a new Hub report for the specified version.
-     *
-     * @return the Report URL
-     * @throws HubIntegrationException
-     */
-    public String startGeneratingHubReport(final ProjectVersionItem version, final ReportFormatEnum reportFormat, final ReportCategoriesEnum[] categories)
-            throws HubIntegrationException {
-        if (ReportFormatEnum.UNKNOWN == reportFormat) {
-            throw new IllegalArgumentException("Can not generate a report of format : " + reportFormat);
-        }
+		long timeout = timeoutInMilliseconds;
+		if (timeoutInMilliseconds <= 0l) {
+			timeout = DEFAULT_TIMEOUT;
+			logger.alwaysLog(timeoutInMilliseconds + "ms is not a valid BOM wait time, using : " + timeout + "ms instead");
+		}
+		this.timeoutInMilliseconds = timeout;
+	}
 
-        final JsonObject json = new JsonObject();
-        json.addProperty("reportFormat", reportFormat.name());
+	/**
+	 * Generates a new Hub report for the specified version.
+	 *
+	 * @return the Report URL
+	 * @throws HubIntegrationException
+	 */
+	public String startGeneratingHubReport(final ProjectVersionView version, final ReportFormatEnum reportFormat, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
+		if (ReportFormatEnum.UNKNOWN == reportFormat) {
+			throw new IllegalArgumentException("Can not generate a report of format : " + reportFormat);
+		}
 
-        if (categories != null) {
-            final JsonArray categoriesJson = new JsonArray();
-            for (final ReportCategoriesEnum category : categories) {
-                categoriesJson.add(category.name());
-            }
-            json.add("categories", categoriesJson);
-        }
+		final JsonObject json = new JsonObject();
+		json.addProperty("reportFormat", reportFormat.name());
 
-        final HubRequest hubRequest = new HubRequest(getRestConnection());
+		if (categories != null) {
+			final JsonArray categoriesJson = new JsonArray();
+			for (final ReportCategoriesEnum category : categories) {
+				categoriesJson.add(category.name());
+			}
+			json.add("categories", categoriesJson);
+		}
 
-        hubRequest.setUrl(getVersionReportLink(version));
+		final HubRequest hubRequest = new HubRequest(getRestConnection());
 
-        final String location = hubRequest.executePost(getRestConnection().getGson().toJson(json));
+		hubRequest.setUrl(getVersionReportLink(version));
 
-        return location;
-    }
+		final String location = hubRequest.executePost(getRestConnection().getGson().toJson(json));
 
-    public void deleteHubReport(final String reportUrl) throws HubIntegrationException {
-        final HubRequest hubRequest = new HubRequest(getRestConnection());
-        hubRequest.setUrl(reportUrl);
-        hubRequest.executeDelete();
-    }
+		return location;
+	}
 
-    /**
-     * Gets the content of the report
-     *
-     * @throws HubIntegrationException
-     */
-    public VersionReport getReportContent(final String reportContentUrl) throws HubIntegrationException {
-        final HubRequest hubRequest = getHubRequestFactory().createGetRequest(reportContentUrl);
+	public void deleteHubReport(final String reportUrl) throws HubIntegrationException {
+		final HubRequest hubRequest = new HubRequest(getRestConnection());
+		hubRequest.setUrl(reportUrl);
+		hubRequest.executeDelete();
+	}
 
-        final JsonObject json = hubRequest.executeGetForResponseJson();
-        final JsonElement content = json.get("reportContent");
-        final JsonArray reportConentArray = content.getAsJsonArray();
-        final JsonObject reportFile = reportConentArray.get(0).getAsJsonObject();
+	/**
+	 * Gets the content of the report
+	 *
+	 * @throws HubIntegrationException
+	 */
+	public VersionReport getReportContent(final String reportContentUrl) throws HubIntegrationException {
+		final HubRequest hubRequest = getHubRequestFactory().createGetRequest(reportContentUrl);
 
-        final VersionReport report = getRestConnection().getGson().fromJson(reportFile.get("fileContent"), VersionReport.class);
+		final JsonObject json = hubRequest.executeGetForResponseJson();
+		final JsonElement content = json.get("reportContent");
+		final JsonArray reportConentArray = content.getAsJsonArray();
+		final JsonObject reportFile = reportConentArray.get(0).getAsJsonObject();
 
-        return report;
-    }
+		final VersionReport report = getRestConnection().getGson().fromJson(reportFile.get("fileContent"), VersionReport.class);
 
-    /**
-     * Checks the report URL every 5 seconds until the report has a finished
-     * time available, then we know it is done being generated. Throws
-     * HubIntegrationException after 30 minutes if the report has not been
-     * generated yet.
-     */
-    public ReportInformationItem isReportFinishedGenerating(final String reportUrl)
-            throws HubIntegrationException {
-        final long startTime = System.currentTimeMillis();
-        long elapsedTime = 0;
-        Date timeFinished = null;
-        ReportInformationItem reportInfo = null;
+		return report;
+	}
 
-        while (timeFinished == null) {
-            final HubRequest hubRequest = getHubRequestFactory().createGetRequest(reportUrl);
-            reportInfo = getItem(hubRequest);
-            timeFinished = reportInfo.getFinishedAt();
-            if (timeFinished != null) {
-                break;
-            }
-            if (elapsedTime >= timeoutInMilliseconds) {
-                final String formattedTime = String.format("%d minutes", TimeUnit.MILLISECONDS.toMinutes(timeoutInMilliseconds));
-                throw new HubIntegrationException("The Report has not finished generating in : " + formattedTime);
-            }
-            // Retry every 5 seconds
-            try {
-                Thread.sleep(5000);
-            } catch (final InterruptedException e) {
-                throw new HubIntegrationException("The thread waiting for the report generation was interrupted", e);
-            }
-            elapsedTime = System.currentTimeMillis() - startTime;
-        }
-        return reportInfo;
-    }
+	/**
+	 * Checks the report URL every 5 seconds until the report has a finished
+	 * time available, then we know it is done being generated. Throws
+	 * HubIntegrationException after 30 minutes if the report has not been
+	 * generated yet.
+	 */
+	public ReportView isReportFinishedGenerating(final String reportUrl) throws HubIntegrationException {
+		final long startTime = System.currentTimeMillis();
+		long elapsedTime = 0;
+		DateTime timeFinished = null;
+		ReportView reportInfo = null;
 
-    /**
-     * Assumes the BOM has already been updated
-     *
-     * @throws HubIntegrationException
-     */
-    public HubRiskReportData generateHubReport(final ProjectVersionItem version, final ReportFormatEnum reportFormat,
-            final ReportCategoriesEnum[] categories) throws HubIntegrationException {
-        logger.debug("Starting the Report generation.");
-        final String reportUrl = startGeneratingHubReport(version, reportFormat, categories);
+		while (timeFinished == null) {
+			final HubRequest hubRequest = getHubRequestFactory().createGetRequest(reportUrl);
+			reportInfo = getItem(hubRequest);
+			timeFinished = reportInfo.getFinishedAt();
+			if (timeFinished != null) {
+				break;
+			}
+			if (elapsedTime >= timeoutInMilliseconds) {
+				final String formattedTime = String.format("%d minutes", TimeUnit.MILLISECONDS.toMinutes(timeoutInMilliseconds));
+				throw new HubIntegrationException("The Report has not finished generating in : " + formattedTime);
+			}
+			// Retry every 5 seconds
+			try {
+				Thread.sleep(5000);
+			} catch (final InterruptedException e) {
+				throw new HubIntegrationException("The thread waiting for the report generation was interrupted", e);
+			}
+			elapsedTime = System.currentTimeMillis() - startTime;
+		}
+		return reportInfo;
+	}
 
-        logger.debug("Waiting for the Report to complete.");
-        final ReportInformationItem reportInfo = isReportFinishedGenerating(reportUrl);
+	/**
+	 * Assumes the BOM has already been updated
+	 *
+	 * @throws HubIntegrationException
+	 */
+	public HubRiskReportData generateHubReport(final ProjectVersionView version, final ReportFormatEnum reportFormat, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
+		logger.debug("Starting the Report generation.");
+		final String reportUrl = startGeneratingHubReport(version, reportFormat, categories);
 
-        final String contentLink = metaService.getFirstLink(reportInfo, MetaService.CONTENT_LINK);
+		logger.debug("Waiting for the Report to complete.");
+		final ReportView reportInfo = isReportFinishedGenerating(reportUrl);
 
-        if (contentLink == null) {
-            throw new HubIntegrationException("Could not find content link for the report at : " + reportUrl);
-        }
+		final String contentLink = metaService.getFirstLink(reportInfo, MetaService.CONTENT_LINK);
 
-        final HubRiskReportData hubRiskReportData = new HubRiskReportData();
-        logger.debug("Getting the Report content.");
-        final VersionReport report = getReportContent(contentLink);
-        hubRiskReportData.setReport(report);
-        logger.debug("Finished retrieving the Report.");
+		if (contentLink == null) {
+			throw new HubIntegrationException("Could not find content link for the report at : " + reportUrl);
+		}
 
-        logger.debug("Cleaning up the Report on the server.");
-        deleteHubReport(reportUrl);
+		final HubRiskReportData hubRiskReportData = new HubRiskReportData();
+		logger.debug("Getting the Report content.");
+		final VersionReport report = getReportContent(contentLink);
+		hubRiskReportData.setReport(report);
+		logger.debug("Finished retrieving the Report.");
 
-        return hubRiskReportData;
-    }
+		logger.debug("Cleaning up the Report on the server.");
+		deleteHubReport(reportUrl);
 
-    private String getVersionReportLink(final ProjectVersionItem version) throws HubIntegrationException {
-        final String versionLink = metaService.getFirstLink(version, MetaService.VERSION_REPORT_LINK);
-        return versionLink;
-    }
+		return hubRiskReportData;
+	}
+
+	private String getVersionReportLink(final ProjectVersionView version) throws HubIntegrationException {
+		final String versionLink = metaService.getFirstLink(version, MetaService.VERSION_REPORT_LINK);
+		return versionLink;
+	}
 
 }

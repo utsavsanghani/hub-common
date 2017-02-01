@@ -33,16 +33,18 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
-public class PolicyRequestService extends HubParameterizedRequestService<PolicyRule> {
-    private static final List<String> POLICY_RULE_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_POLICY_RULES);
+import io.swagger.client.model.PolicyRuleView;
 
-    public PolicyRequestService(final RestConnection restConnection) {
-        super(restConnection, PolicyRule.class);
-    }
+public class PolicyRequestService extends HubParameterizedRequestService<PolicyRuleView> {
+	private static final List<String> POLICY_RULE_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_POLICY_RULES);
 
-    public List<PolicyRule> getAllPolicyRules() throws HubIntegrationException {
-        final List<PolicyRule> allPolicyRuleItems = getAllItems(POLICY_RULE_SEGMENTS);
-        return allPolicyRuleItems;
-    }
+	public PolicyRequestService(final RestConnection restConnection) {
+		super(restConnection, PolicyRuleView.class);
+	}
+
+	public List<PolicyRuleView> getAllPolicyRules() throws HubIntegrationException {
+		final List<PolicyRuleView> allPolicyRuleItems = getAllItems(POLICY_RULE_SEGMENTS);
+		return allPolicyRuleItems;
+	}
 
 }

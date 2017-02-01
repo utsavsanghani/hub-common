@@ -33,16 +33,18 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
-public class UserRequestService extends HubParameterizedRequestService<UserItem> {
-    private static final List<String> USERS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_USERS);
+import io.swagger.client.model.UserView;
 
-    public UserRequestService(final RestConnection restConnection) {
-        super(restConnection, UserItem.class);
-    }
+public class UserRequestService extends HubParameterizedRequestService<UserView> {
+	private static final List<String> USERS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_USERS);
 
-    public List<UserItem> getAllUsers() throws HubIntegrationException {
-        final List<UserItem> allUserItems = getAllItems(USERS_SEGMENTS);
-        return allUserItems;
-    }
+	public UserRequestService(final RestConnection restConnection) {
+		super(restConnection, UserView.class);
+	}
+
+	public List<UserView> getAllUsers() throws HubIntegrationException {
+		final List<UserView> allUserItems = getAllItems(USERS_SEGMENTS);
+		return allUserItems;
+	}
 
 }

@@ -23,11 +23,13 @@
  */
 package com.blackducksoftware.integration.hub.api.notification;
 
-public class RuleViolationNotificationItem extends NotificationItem {
-    public RuleViolationNotificationContent content;
+import io.swagger.client.model.NotificationView;
 
-    public RuleViolationNotificationContent getContent() {
-        return content;
-    }
+public class RuleViolationNotificationItem extends NotificationView {
+	public RuleViolationNotificationContent content;
+
+	public RuleViolationNotificationContent getContent() {
+		return content;
+	}
 
 }

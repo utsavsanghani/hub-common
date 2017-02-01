@@ -24,21 +24,17 @@
 package com.blackducksoftware.integration.hub.dataservice.notification.model;
 
 import java.net.URISyntaxException;
-import java.util.Date;
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.api.component.version.ComponentVersion;
-import com.blackducksoftware.integration.hub.api.policy.PolicyRule;
-import com.blackducksoftware.integration.hub.dataservice.model.ProjectVersion;
+import org.joda.time.DateTime;
+
+import io.swagger.client.model.ComponentVersionView;
+import io.swagger.client.model.PolicyRuleView;
 
 public class PolicyViolationClearedContentItem extends PolicyViolationContentItem {
-    public PolicyViolationClearedContentItem(final Date createdAt, final ProjectVersion projectVersion,
-            final String componentName,
-            final ComponentVersion componentVersion, final String componentUrl,
-            final String componentVersionUrl,
-            final List<PolicyRule> policyRuleList) throws URISyntaxException {
-        super(createdAt, projectVersion, componentName, componentVersion, componentUrl, componentVersionUrl,
-                policyRuleList);
-    }
+	public PolicyViolationClearedContentItem(final DateTime createdAt, final FullProjectVersionView projectVersion, final String componentName, final ComponentVersionView componentVersion, final String componentUrl,
+			final String componentVersionUrl, final List<PolicyRuleView> policyRuleList) throws URISyntaxException {
+		super(createdAt, projectVersion, componentName, componentVersion, componentUrl, componentVersionUrl, policyRuleList);
+	}
 
 }

@@ -34,24 +34,25 @@ import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
-public class CodeLocationRequestService extends HubParameterizedRequestService<CodeLocationItem> {
-    private static final List<String> CODE_LOCATION_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_CODE_LOCATIONS);
+import io.swagger.client.model.CodeLocationView;
 
-    public CodeLocationRequestService(final RestConnection restConnection) {
-        super(restConnection, CodeLocationItem.class);
-    }
+public class CodeLocationRequestService extends HubParameterizedRequestService<CodeLocationView> {
+	private static final List<String> CODE_LOCATION_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_CODE_LOCATIONS);
 
-    public List<CodeLocationItem> getAllCodeLocations() throws HubIntegrationException {
-        final List<CodeLocationItem> allCodeLocations = getAllItems(CODE_LOCATION_SEGMENTS);
-        return allCodeLocations;
-    }
+	public CodeLocationRequestService(final RestConnection restConnection) {
+		super(restConnection, CodeLocationView.class);
+	}
 
-    public List<CodeLocationItem> getAllCodeLocationsForCodeLocationType(final CodeLocationTypeEnum codeLocationType) throws HubIntegrationException {
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(CODE_LOCATION_SEGMENTS).addQueryParameter("codeLocationType",
-                codeLocationType.toString());
+	public List<CodeLocationView> getAllCodeLocations() throws HubIntegrationException {
+		final List<CodeLocationView> allCodeLocations = getAllItems(CODE_LOCATION_SEGMENTS);
+		return allCodeLocations;
+	}
 
-        final List<CodeLocationItem> allCodeLocations = getAllItems(hubPagedRequest);
-        return allCodeLocations;
-    }
+	public List<CodeLocationView> getAllCodeLocationsForCodeLocationType(final CodeLocationTypeEnum codeLocationType) throws HubIntegrationException {
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(CODE_LOCATION_SEGMENTS).addQueryParameter("codeLocationType", codeLocationType.toString());
+
+		final List<CodeLocationView> allCodeLocations = getAllItems(hubPagedRequest);
+		return allCodeLocations;
+	}
 
 }

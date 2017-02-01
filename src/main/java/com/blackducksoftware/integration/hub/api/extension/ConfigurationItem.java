@@ -25,55 +25,55 @@ package com.blackducksoftware.integration.hub.api.extension;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.hub.api.item.HubItem;
+import io.swagger.client.model.HubView;
 
-public class ConfigurationItem extends HubItem {
-    private String name;
+public class ConfigurationItem extends HubView {
+	private String name;
 
-    private OptionTypeEnum optionType;
+	private OptionTypeEnum optionType;
 
-    private String title;
+	private String title;
 
-    private boolean required;
+	private boolean required;
 
-    private boolean singleValue;
+	private boolean singleValue;
 
-    private String description;
+	private String description;
 
-    private List<OptionItem> options;
+	private List<OptionItem> options;
 
-    private List<String> value;
+	private List<String> value;
 
-    public String getName() {
-        return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public OptionTypeEnum getOptionType() {
-        return optionType;
-    }
+	public OptionTypeEnum getOptionType() {
+		return optionType;
+	}
 
-    public String getTitle() {
-        return title;
-    }
+	public String getTitle() {
+		return title;
+	}
 
-    public boolean isRequired() {
-        return required;
-    }
+	public boolean isRequired() {
+		return required;
+	}
 
-    public boolean isSingleValue() {
-        return singleValue;
-    }
+	public boolean isSingleValue() {
+		return singleValue;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public List<OptionItem> getOptions() {
-        return options;
-    }
+	public List<OptionItem> getOptions() {
+		return options;
+	}
 
-    public List<String> getValue() {
-        return value;
-    }
+	public List<String> getValue() {
+		return value;
+	}
 
 }

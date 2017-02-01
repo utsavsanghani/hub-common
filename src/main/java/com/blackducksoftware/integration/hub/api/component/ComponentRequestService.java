@@ -34,34 +34,35 @@ import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
-public class ComponentRequestService extends HubParameterizedRequestService<Component> {
-    private static final List<String> COMPONENT_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_COMPONENTS);
+import io.swagger.client.model.ComponentSearchResultView;
 
-    public ComponentRequestService(final RestConnection restConnection) {
-        super(restConnection, Component.class);
-    }
+public class ComponentRequestService extends HubParameterizedRequestService<ComponentSearchResultView> {
+	private static final List<String> COMPONENT_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_COMPONENTS);
 
-    public List<Component> getAllComponents(final String namespace, final String groupId, final String artifactId, final String version)
-            throws HubIntegrationException {
-        final String componentQuery = String.format("id:%s|%s|%s|%s", namespace, groupId, artifactId, version);
-        final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(COMPONENT_SEGMENTS, componentQuery);
+	public ComponentRequestService(final RestConnection restConnection) {
+		super(restConnection, ComponentSearchResultView.class);
+	}
 
-        final List<Component> allComponents = getAllItems(hubPagedRequest);
-        return allComponents;
-    }
+	public List<ComponentSearchResultView> getAllComponents(final String namespace, final String groupId, final String artifactId, final String version) throws HubIntegrationException {
+		final String componentQuery = String.format("id:%s|%s|%s|%s", namespace, groupId, artifactId, version);
+		final HubPagedRequest hubPagedRequest = getHubRequestFactory().createGetPagedRequest(COMPONENT_SEGMENTS, componentQuery);
 
-    public Component getExactComponentMatch(String namespace, String groupId, String artifactId, String version) throws HubIntegrationException {
-        final List<Component> allComponents = getAllComponents(namespace, groupId, artifactId, version);
-        for (final Component componentItem : allComponents) {
-            if (componentItem.getOriginId() != null) {
-                final String exactMatch = String.format("%s:%s:%s", groupId, artifactId, version);
-                if (componentItem.getOriginId().equals(exactMatch)) {
-                    return componentItem;
-                }
-            }
-        }
+		final List<ComponentSearchResultView> allComponents = getAllItems(hubPagedRequest);
+		return allComponents;
+	}
 
-        throw new HubIntegrationException("Couldn't find an exact component match.");
-    }
+	public ComponentSearchResultView getExactComponentMatch(String namespace, String groupId, String artifactId, String version) throws HubIntegrationException {
+		final List<ComponentSearchResultView> allComponents = getAllComponents(namespace, groupId, artifactId, version);
+		for (final ComponentSearchResultView componentItem : allComponents) {
+			if (componentItem.getOriginId() != null) {
+				final String exactMatch = String.format("%s:%s:%s", groupId, artifactId, version);
+				if (componentItem.getOriginId().equals(exactMatch)) {
+					return componentItem;
+				}
+			}
+		}
+
+		throw new HubIntegrationException("Couldn't find an exact component match.");
+	}
 
 }

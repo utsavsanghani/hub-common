@@ -30,9 +30,7 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
-import com.blackducksoftware.integration.hub.api.project.ProjectItem;
 import com.blackducksoftware.integration.hub.api.project.ProjectRequestService;
-import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionItem;
 import com.blackducksoftware.integration.hub.api.project.version.ProjectVersionRequestService;
 import com.blackducksoftware.integration.hub.api.report.HubRiskReportData;
 import com.blackducksoftware.integration.hub.api.report.ReportCategoriesEnum;
@@ -44,94 +42,90 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 import com.blackducksoftware.integration.log.IntLogger;
 
+import io.swagger.client.model.ProjectVersionView;
+import io.swagger.client.model.ProjectView;
+
 public class RiskReportDataService extends HubRequestService {
 
-    private final ProjectRequestService projectRequestService;
+	private final ProjectRequestService projectRequestService;
 
-    private final ProjectVersionRequestService projectVersionRequestService;
+	private final ProjectVersionRequestService projectVersionRequestService;
 
-    private final ReportRequestService reportRequestService;
+	private final ReportRequestService reportRequestService;
 
-    public RiskReportDataService(final IntLogger logger, final RestConnection restConnection, final ProjectRequestService projectRequestService,
-            final ProjectVersionRequestService projectVersionRequestService, final ReportRequestService reportRequestService) {
-        super(restConnection);
-        this.projectRequestService = projectRequestService;
-        this.projectVersionRequestService = projectVersionRequestService;
-        this.reportRequestService = reportRequestService;
+	public RiskReportDataService(final IntLogger logger, final RestConnection restConnection, final ProjectRequestService projectRequestService, final ProjectVersionRequestService projectVersionRequestService,
+			final ReportRequestService reportRequestService) {
+		super(restConnection);
+		this.projectRequestService = projectRequestService;
+		this.projectVersionRequestService = projectVersionRequestService;
+		this.reportRequestService = reportRequestService;
 
-    }
+	}
 
-    public HubRiskReportData createRiskReport(final String projectName, final String projectVersionName)
-            throws HubIntegrationException {
-        final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
-        return createRiskReport(projectName, projectVersionName, categories);
-    }
+	public HubRiskReportData createRiskReport(final String projectName, final String projectVersionName) throws HubIntegrationException {
+		final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
+		return createRiskReport(projectName, projectVersionName, categories);
+	}
 
-    public HubRiskReportData createRiskReport(final String projectName, final String projectVersionName,
-            final ReportCategoriesEnum[] categories) throws HubIntegrationException {
-        final ProjectItem project = projectRequestService.getProjectByName(projectName);
-        final ProjectVersionItem version = projectVersionRequestService.getProjectVersion(project, projectVersionName);
-        return reportRequestService.generateHubReport(version, ReportFormatEnum.JSON, categories);
-    }
+	public HubRiskReportData createRiskReport(final String projectName, final String projectVersionName, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
+		final ProjectView project = projectRequestService.getProjectByName(projectName);
+		final ProjectVersionView version = projectVersionRequestService.getProjectVersion(project, projectVersionName);
+		return reportRequestService.generateHubReport(version, ReportFormatEnum.JSON, categories);
+	}
 
-    public HubRiskReportData createRiskReport(final ProjectVersionItem version)
-            throws HubIntegrationException {
-        final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
-        return createRiskReport(version, categories);
-    }
+	public HubRiskReportData createRiskReport(final ProjectVersionView version) throws HubIntegrationException {
+		final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
+		return createRiskReport(version, categories);
+	}
 
-    public HubRiskReportData createRiskReport(final ProjectVersionItem version,
-            final ReportCategoriesEnum[] categories) throws HubIntegrationException {
-        return reportRequestService.generateHubReport(version, ReportFormatEnum.JSON, categories);
-    }
+	public HubRiskReportData createRiskReport(final ProjectVersionView version, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
+		return reportRequestService.generateHubReport(version, ReportFormatEnum.JSON, categories);
+	}
 
-    public void createRiskReportFiles(final File outputDirectory, final String projectName, final String projectVersionName) throws HubIntegrationException {
-        final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
-        createRiskReportFiles(outputDirectory, projectName, projectVersionName, categories);
-    }
+	public void createRiskReportFiles(final File outputDirectory, final String projectName, final String projectVersionName) throws HubIntegrationException {
+		final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
+		createRiskReportFiles(outputDirectory, projectName, projectVersionName, categories);
+	}
 
-    public void createRiskReportFiles(final File outputDirectory, final String projectName, final String projectVersionName,
-            final ReportCategoriesEnum[] categories) throws HubIntegrationException {
-        final HubRiskReportData riskreportData = createRiskReport(projectName, projectVersionName, categories);
-        createRiskReportFiles(outputDirectory, riskreportData);
-    }
+	public void createRiskReportFiles(final File outputDirectory, final String projectName, final String projectVersionName, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
+		final HubRiskReportData riskreportData = createRiskReport(projectName, projectVersionName, categories);
+		createRiskReportFiles(outputDirectory, riskreportData);
+	}
 
-    public void createRiskReportFiles(final File outputDirectory, final ProjectVersionItem version) throws HubIntegrationException {
-        final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
-        createRiskReportFiles(outputDirectory, version, categories);
-    }
+	public void createRiskReportFiles(final File outputDirectory, final ProjectVersionView version) throws HubIntegrationException {
+		final ReportCategoriesEnum[] categories = { ReportCategoriesEnum.VERSION, ReportCategoriesEnum.COMPONENTS };
+		createRiskReportFiles(outputDirectory, version, categories);
+	}
 
-    public void createRiskReportFiles(final File outputDirectory, final ProjectVersionItem version,
-            final ReportCategoriesEnum[] categories) throws HubIntegrationException {
-        final HubRiskReportData riskreportData = createRiskReport(version, categories);
-        createRiskReportFiles(outputDirectory, riskreportData);
-    }
+	public void createRiskReportFiles(final File outputDirectory, final ProjectVersionView version, final ReportCategoriesEnum[] categories) throws HubIntegrationException {
+		final HubRiskReportData riskreportData = createRiskReport(version, categories);
+		createRiskReportFiles(outputDirectory, riskreportData);
+	}
 
-    public void createRiskReportFiles(final File outputDirectory, final HubRiskReportData riskreportData) throws HubIntegrationException {
-        try {
-            final RiskReportResourceCopier copier = new RiskReportResourceCopier(outputDirectory.getCanonicalPath());
-            File htmlFile = null;
-            try {
-                final List<File> writtenFiles = copier.copy();
-                for (final File file : writtenFiles) {
-                    if (file.getName().equals(RiskReportResourceCopier.RISK_REPORT_HTML_FILE_NAME)) {
-                        htmlFile = file;
-                        break;
-                    }
-                }
-            } catch (final URISyntaxException e) {
-                throw new HubIntegrationException("Couldn't create the report: " + e.getMessage(), e);
-            }
-            if (htmlFile == null) {
-                throw new HubIntegrationException("Could not find the file : " + RiskReportResourceCopier.RISK_REPORT_HTML_FILE_NAME
-                        + ", the report files must not have been copied into the report directory.");
-            }
-            String htmlFileString = FileUtils.readFileToString(htmlFile, "UTF-8");
-            final String reportString = getRestConnection().getGson().toJson(riskreportData);
-            htmlFileString = htmlFileString.replace(RiskReportResourceCopier.JSON_TOKEN_TO_REPLACE, reportString);
-            FileUtils.writeStringToFile(htmlFile, htmlFileString, "UTF-8");
-        } catch (final IOException e) {
-            throw new HubIntegrationException("Couldn't create the report: " + e.getMessage(), e);
-        }
-    }
+	public void createRiskReportFiles(final File outputDirectory, final HubRiskReportData riskreportData) throws HubIntegrationException {
+		try {
+			final RiskReportResourceCopier copier = new RiskReportResourceCopier(outputDirectory.getCanonicalPath());
+			File htmlFile = null;
+			try {
+				final List<File> writtenFiles = copier.copy();
+				for (final File file : writtenFiles) {
+					if (file.getName().equals(RiskReportResourceCopier.RISK_REPORT_HTML_FILE_NAME)) {
+						htmlFile = file;
+						break;
+					}
+				}
+			} catch (final URISyntaxException e) {
+				throw new HubIntegrationException("Couldn't create the report: " + e.getMessage(), e);
+			}
+			if (htmlFile == null) {
+				throw new HubIntegrationException("Could not find the file : " + RiskReportResourceCopier.RISK_REPORT_HTML_FILE_NAME + ", the report files must not have been copied into the report directory.");
+			}
+			String htmlFileString = FileUtils.readFileToString(htmlFile, "UTF-8");
+			final String reportString = getRestConnection().getGson().toJson(riskreportData);
+			htmlFileString = htmlFileString.replace(RiskReportResourceCopier.JSON_TOKEN_TO_REPLACE, reportString);
+			FileUtils.writeStringToFile(htmlFile, htmlFileString, "UTF-8");
+		} catch (final IOException e) {
+			throw new HubIntegrationException("Couldn't create the report: " + e.getMessage(), e);
+		}
+	}
 }

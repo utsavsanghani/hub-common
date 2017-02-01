@@ -26,9 +26,11 @@ package com.blackducksoftware.integration.hub.api.version;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
-public class VersionBomPolicyRequestService extends HubParameterizedRequestService<BomComponentVersionPolicyStatus> {
-    public VersionBomPolicyRequestService(final RestConnection restConnection) {
-        super(restConnection, BomComponentVersionPolicyStatus.class);
-    }
+import io.swagger.client.model.BomComponentPolicyStatusView;
+
+public class VersionBomPolicyRequestService extends HubParameterizedRequestService<BomComponentPolicyStatusView> {
+	public VersionBomPolicyRequestService(final RestConnection restConnection) {
+		super(restConnection, BomComponentPolicyStatusView.class);
+	}
 
 }
