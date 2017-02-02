@@ -2,8 +2,8 @@ package com.blackducksoftware.integration.hub.dataservice.notification.model;
 
 import org.joda.time.DateTime;
 
+import io.swagger.client.model.ComplexLicenseView;
 import io.swagger.client.model.HubView;
-import io.swagger.client.model.OptionalComplexLicenseView;
 import io.swagger.client.model.ProjectVersionView.DistributionEnum;
 import io.swagger.client.model.ProjectVersionView.PhaseEnum;
 import io.swagger.client.model.ProjectVersionView.SourceEnum;
@@ -32,7 +32,7 @@ public class FullProjectVersionView extends HubView {
 
 	}
 
-	public void setLicense(OptionalComplexLicenseView license) {
+	public void setLicense(ComplexLicenseView license) {
 		// TODO Auto-generated method stub
 
 	}
