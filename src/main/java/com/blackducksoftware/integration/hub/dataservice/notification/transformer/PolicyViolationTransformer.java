@@ -42,10 +42,10 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.exception.HubItemTransformException;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 
-import io.swagger.client.model.ComponentVersionView;
-import io.swagger.client.model.NotificationView;
-import io.swagger.client.model.PolicyRuleView;
-import io.swagger.client.model.ProjectVersionView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.NotificationView;
+import com.blackducksoftware.integration.hub.model.PolicyRuleView;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView;
 
 public class PolicyViolationTransformer extends AbstractPolicyTransformer {
 	public PolicyViolationTransformer(final NotificationRequestService notificationService, final ProjectVersionRequestService projectVersionService, final PolicyRequestService policyService,

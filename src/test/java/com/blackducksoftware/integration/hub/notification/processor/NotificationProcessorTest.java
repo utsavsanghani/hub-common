@@ -56,8 +56,8 @@ import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntBufferedLogger;
 import com.blackducksoftware.integration.log.IntLogger;
 
-import io.swagger.client.model.ComponentVersionView;
-import io.swagger.client.model.VulnerabilityView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.VulnerabilityView;
 
 public class NotificationProcessorTest {
 

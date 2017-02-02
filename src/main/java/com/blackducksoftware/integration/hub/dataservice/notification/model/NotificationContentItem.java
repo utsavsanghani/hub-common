@@ -29,7 +29,7 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.Joiner;
 
-import io.swagger.client.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
 
 public class NotificationContentItem implements Comparable<NotificationContentItem> {
 	private final FullProjectVersionView projectVersion;

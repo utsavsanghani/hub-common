@@ -39,11 +39,11 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 import com.blackducksoftware.integration.log.IntLogger;
 
-import io.swagger.client.model.CodeLocationView;
-import io.swagger.client.model.ProjectVersionView;
-import io.swagger.client.model.ProjectView;
-import io.swagger.client.model.ScanSummaryView;
-import io.swagger.client.model.ScanSummaryView.StatusEnum;
+import com.blackducksoftware.integration.hub.model.CodeLocationView;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView;
+import com.blackducksoftware.integration.hub.model.ProjectView;
+import com.blackducksoftware.integration.hub.model.ScanSummaryView;
+import com.blackducksoftware.integration.hub.model.ScanSummaryView.StatusEnum;
 
 public class ScanStatusDataService extends HubRequestService {
 	private static final long FIVE_SECONDS = 5 * 1000;

@@ -30,11 +30,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.CodeLocationView;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
-
-import io.swagger.client.model.CodeLocationView;
 
 public class CodeLocationRequestService extends HubParameterizedRequestService<CodeLocationView> {
 	private static final List<String> CODE_LOCATION_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_CODE_LOCATIONS);

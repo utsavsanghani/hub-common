@@ -33,8 +33,8 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 
-import io.swagger.client.model.ProjectVersionView;
-import io.swagger.client.model.ProjectView;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView;
+import com.blackducksoftware.integration.hub.model.ProjectView;
 
 public class PolicyStatusDataService extends HubRequestService {
 	private final ProjectRequestService projectRequestService;

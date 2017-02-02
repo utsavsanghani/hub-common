@@ -29,6 +29,9 @@ import org.joda.time.DateTime;
 
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView;
+import com.blackducksoftware.integration.hub.model.ReportView;
+import com.blackducksoftware.integration.hub.model.ReportView.ReportFormatEnum;
 import com.blackducksoftware.integration.hub.request.HubRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
@@ -36,10 +39,6 @@ import com.blackducksoftware.integration.log.IntLogger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import io.swagger.client.model.ProjectVersionView;
-import io.swagger.client.model.ReportView;
-import io.swagger.client.model.ReportView.ReportFormatEnum;
 
 public class ReportRequestService extends HubParameterizedRequestService<ReportView> {
 	public final static long DEFAULT_TIMEOUT = 1000 * 60 * 5;

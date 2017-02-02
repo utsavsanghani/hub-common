@@ -30,10 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.UserView;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
-
-import io.swagger.client.model.UserView;
 
 public class UserRequestService extends HubParameterizedRequestService<UserView> {
 	private static final List<String> USERS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_USERS);

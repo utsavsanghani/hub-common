@@ -37,22 +37,21 @@ import com.blackducksoftware.integration.hub.service.HubRequestService;
 
 public class MockProcessor extends NotificationProcessor<Collection<NotificationEvent>> {
 
-    public MockProcessor(HubRequestService hubRequestService, VulnerabilityRequestService vulnerabilityRequestService, MetaService metaService) {
-        final MapProcessorCache cache = new MapProcessorCache();
-        getCacheList().add(cache);
-        getProcessorMap().put(PolicyViolationContentItem.class, new MockEventProcessor(cache, metaService));
-        getProcessorMap().put(PolicyViolationClearedContentItem.class, new MockEventProcessor(cache, metaService));
-        getProcessorMap().put(PolicyOverrideContentItem.class, new MockEventProcessor(cache, metaService));
-        getProcessorMap().put(VulnerabilityContentItem.class,
-                new MockEventProcessor(cache, metaService));
-    }
+	public MockProcessor(HubRequestService hubRequestService, VulnerabilityRequestService vulnerabilityRequestService, MetaService metaService) {
+		final MapProcessorCache cache = new MapProcessorCache();
+		getCacheList().add(cache);
+		getProcessorMap().put(PolicyViolationContentItem.class, new MockEventProcessor(cache, metaService));
+		getProcessorMap().put(PolicyViolationClearedContentItem.class, new MockEventProcessor(cache, metaService));
+		getProcessorMap().put(PolicyOverrideContentItem.class, new MockEventProcessor(cache, metaService));
+		getProcessorMap().put(VulnerabilityContentItem.class, new MockEventProcessor(cache, metaService));
+	}
 
-    @Override
-    public Collection<NotificationEvent> processEvents(Collection<NotificationEvent> eventCollection) {
-        final Collection<NotificationEvent> dataList = new LinkedList<>();
-        for (final NotificationEvent entry : eventCollection) {
-            dataList.add(entry);
-        }
-        return dataList;
-    }
+	@Override
+	public Collection<NotificationEvent> processEvents(Collection<NotificationEvent> eventCollection) {
+		final Collection<NotificationEvent> dataList = new LinkedList<>();
+		for (final NotificationEvent entry : eventCollection) {
+			dataList.add(entry);
+		}
+		return dataList;
+	}
 }

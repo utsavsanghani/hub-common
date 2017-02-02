@@ -23,7 +23,7 @@
  */
 package com.blackducksoftware.integration.hub.api.extension;
 
-import io.swagger.client.model.HubView;
+import com.blackducksoftware.integration.hub.model.HubView;
 
 public class UserOptionLinkItem extends HubView {
 	private String user;

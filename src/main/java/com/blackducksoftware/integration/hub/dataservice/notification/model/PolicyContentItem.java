@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.dataservice.notification.model;
 
 import org.joda.time.DateTime;
 
-import io.swagger.client.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
 
 public class PolicyContentItem extends NotificationContentItem {
 	private final String componentUrl;

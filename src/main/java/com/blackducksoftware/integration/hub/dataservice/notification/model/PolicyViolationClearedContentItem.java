@@ -28,8 +28,8 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 
-import io.swagger.client.model.ComponentVersionView;
-import io.swagger.client.model.PolicyRuleView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.PolicyRuleView;
 
 public class PolicyViolationClearedContentItem extends PolicyViolationContentItem {
 	public PolicyViolationClearedContentItem(final DateTime createdAt, final FullProjectVersionView projectVersion, final String componentName, final ComponentVersionView componentVersion, final String componentUrl,

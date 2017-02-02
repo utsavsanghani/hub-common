@@ -26,11 +26,10 @@ package com.blackducksoftware.integration.hub.api.vulnerablebomcomponent;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.VulnerableComponentView;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
-
-import io.swagger.client.model.VulnerableComponentView;
 
 public class VulnerableBomComponentRequestService extends HubParameterizedRequestService<VulnerableComponentView> {
 	public VulnerableBomComponentRequestService(final RestConnection restConnection) {

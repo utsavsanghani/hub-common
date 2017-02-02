@@ -26,7 +26,7 @@ package com.blackducksoftware.integration.hub.api.version;
 import org.apache.commons.lang3.builder.RecursiveToStringStyle;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import io.swagger.client.model.HubView;
+import com.blackducksoftware.integration.hub.model.HubView;
 
 public class VersionComparison extends HubView {
 	private final String consumerVersion;

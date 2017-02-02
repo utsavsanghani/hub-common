@@ -29,14 +29,13 @@ import java.util.List;
 
 import com.blackducksoftware.integration.hub.api.item.HubPagedResponse;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.HubView;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.request.HubRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import io.swagger.client.model.HubView;
 
 public class HubParameterizedRequestService<T extends HubView> extends HubRequestService {
 	private final Class<T> clazz;

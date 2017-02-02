@@ -28,7 +28,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
-import io.swagger.client.model.HubView;
+import com.blackducksoftware.integration.hub.model.HubView;
 
 public class PolicyStatusItem extends HubView {
 	private PolicyStatusEnum overallStatus;

@@ -2,11 +2,11 @@ package com.blackducksoftware.integration.hub.dataservice.notification.model;
 
 import org.joda.time.DateTime;
 
-import io.swagger.client.model.ComplexLicenseView;
-import io.swagger.client.model.HubView;
-import io.swagger.client.model.ProjectVersionView.DistributionEnum;
-import io.swagger.client.model.ProjectVersionView.PhaseEnum;
-import io.swagger.client.model.ProjectVersionView.SourceEnum;
+import com.blackducksoftware.integration.hub.model.ComplexLicenseView;
+import com.blackducksoftware.integration.hub.model.HubView;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView.DistributionEnum;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView.PhaseEnum;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView.SourceEnum;
 
 public class FullProjectVersionView extends HubView {
 

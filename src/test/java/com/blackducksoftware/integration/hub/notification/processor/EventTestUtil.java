@@ -39,9 +39,9 @@ import com.blackducksoftware.integration.hub.dataservice.notification.model.Poli
 import com.blackducksoftware.integration.hub.dataservice.notification.model.VulnerabilityContentItem;
 import com.blackducksoftware.integration.hub.meta.MetaAllowEnum;
 
-import io.swagger.client.model.ComponentVersionView;
-import io.swagger.client.model.PolicyRuleView;
-import io.swagger.client.model.VulnerabilityView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.PolicyRuleView;
+import com.blackducksoftware.integration.hub.model.VulnerabilityView;
 
 public class EventTestUtil {
 	public static final String DESCRIPTION = "description";

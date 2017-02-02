@@ -37,7 +37,7 @@ import com.blackducksoftware.integration.hub.dataservice.ItemTransform;
 import com.blackducksoftware.integration.hub.dataservice.extension.item.UserConfigItem;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 
-import io.swagger.client.model.UserView;
+import com.blackducksoftware.integration.hub.model.UserView;
 
 public class UserConfigTransform implements ItemTransform<List<UserConfigItem>, UserOptionLinkItem> {
 	private final UserRequestService userRequestService;

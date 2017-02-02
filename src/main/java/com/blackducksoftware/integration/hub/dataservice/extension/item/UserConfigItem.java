@@ -27,7 +27,7 @@ import java.util.Map;
 
 import com.blackducksoftware.integration.hub.api.extension.ConfigurationItem;
 
-import io.swagger.client.model.UserView;
+import com.blackducksoftware.integration.hub.model.UserView;
 
 public class UserConfigItem {
 	private final UserView user;

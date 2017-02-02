@@ -26,13 +26,12 @@ package com.blackducksoftware.integration.hub.service;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.HubView;
 import com.blackducksoftware.integration.hub.request.HubRequest;
 import com.blackducksoftware.integration.hub.request.HubRequestFactory;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import io.swagger.client.model.HubView;
 
 public class HubRequestService {
 	private final RestConnection restConnection;

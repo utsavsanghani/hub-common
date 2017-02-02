@@ -37,6 +37,8 @@ import java.util.TimeZone;
 
 import com.blackducksoftware.integration.hub.api.item.MetaService;
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.NotificationView;
+import com.blackducksoftware.integration.hub.model.UserView;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
@@ -44,9 +46,6 @@ import com.blackducksoftware.integration.log.IntLogger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import io.swagger.client.model.NotificationView;
-import io.swagger.client.model.UserView;
 
 public class NotificationRequestService extends HubParameterizedRequestService<NotificationView> {
 	private static final List<String> NOTIFICATIONS_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_NOTIFICATIONS);

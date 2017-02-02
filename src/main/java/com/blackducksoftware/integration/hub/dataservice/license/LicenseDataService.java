@@ -28,9 +28,9 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 
-import io.swagger.client.model.ComplexLicenseView;
-import io.swagger.client.model.ComponentSearchResultView;
-import io.swagger.client.model.ComponentVersionView;
+import com.blackducksoftware.integration.hub.model.ComplexLicenseView;
+import com.blackducksoftware.integration.hub.model.ComponentSearchResultView;
+import com.blackducksoftware.integration.hub.model.ComponentVersionView;
 
 public class LicenseDataService extends HubRequestService {
 	private final HubRequestService hubRequestService;

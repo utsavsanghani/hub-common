@@ -41,7 +41,7 @@ import com.blackducksoftware.integration.hub.util.HostnameHelper;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.util.CIEnvironmentVariables;
 
-import io.swagger.client.model.ScanSummaryView;
+import com.blackducksoftware.integration.hub.model.ScanSummaryView;
 
 public class CLIDataService extends HubRequestService {
 	private final IntLogger logger;

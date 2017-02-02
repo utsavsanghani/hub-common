@@ -50,8 +50,8 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 import com.blackducksoftware.integration.log.IntLogger;
 
-import io.swagger.client.model.NotificationView;
-import io.swagger.client.model.UserView;
+import com.blackducksoftware.integration.hub.model.NotificationView;
+import com.blackducksoftware.integration.hub.model.UserView;
 
 public class NotificationDataService extends HubRequestService {
 	private final NotificationRequestService notificationRequestService;

@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEventConstants;
 
-import io.swagger.client.model.PolicyRuleView;
+import com.blackducksoftware.integration.hub.model.PolicyRuleView;
 
 public class MockEventProcessor extends NotificationSubProcessor {
 	private final Logger logger = LoggerFactory.getLogger(MockEventProcessor.class);

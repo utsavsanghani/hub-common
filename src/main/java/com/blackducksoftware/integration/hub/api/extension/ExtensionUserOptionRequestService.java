@@ -30,14 +30,13 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
 
 public class ExtensionUserOptionRequestService extends HubParameterizedRequestService<UserOptionLinkItem> {
-    public ExtensionUserOptionRequestService(final RestConnection restConnection) {
-        super(restConnection, UserOptionLinkItem.class);
-    }
+	public ExtensionUserOptionRequestService(final RestConnection restConnection) {
+		super(restConnection, UserOptionLinkItem.class);
+	}
 
-    public List<UserOptionLinkItem> getUserOptions(final String userOptionsUrl)
-            throws HubIntegrationException {
-        final List<UserOptionLinkItem> allItems = getAllItems(userOptionsUrl);
-        return allItems;
-    }
+	public List<UserOptionLinkItem> getUserOptions(final String userOptionsUrl) throws HubIntegrationException {
+		final List<UserOptionLinkItem> allItems = getAllItems(userOptionsUrl);
+		return allItems;
+	}
 
 }

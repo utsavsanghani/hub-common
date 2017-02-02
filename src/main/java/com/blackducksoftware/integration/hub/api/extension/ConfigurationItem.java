@@ -25,7 +25,7 @@ package com.blackducksoftware.integration.hub.api.extension;
 
 import java.util.List;
 
-import io.swagger.client.model.HubView;
+import com.blackducksoftware.integration.hub.model.HubView;
 
 public class ConfigurationItem extends HubView {
 	private String name;

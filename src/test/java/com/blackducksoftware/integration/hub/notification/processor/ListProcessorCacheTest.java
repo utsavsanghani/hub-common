@@ -37,7 +37,7 @@ import org.junit.Test;
 import com.blackducksoftware.integration.hub.dataservice.notification.model.PolicyViolationContentItem;
 import com.blackducksoftware.integration.hub.notification.processor.event.NotificationEvent;
 
-import io.swagger.client.model.PolicyRuleView;
+import com.blackducksoftware.integration.hub.model.PolicyRuleView;
 
 public class ListProcessorCacheTest {
 

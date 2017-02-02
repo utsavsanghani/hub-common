@@ -41,9 +41,9 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubRequestService;
 import com.blackducksoftware.integration.log.IntLogger;
 
-import io.swagger.client.model.ProjectVersionView;
-import io.swagger.client.model.ProjectView;
-import io.swagger.client.model.ReportView;
+import com.blackducksoftware.integration.hub.model.ProjectVersionView;
+import com.blackducksoftware.integration.hub.model.ProjectView;
+import com.blackducksoftware.integration.hub.model.ReportView;
 
 public class RiskReportDataService extends HubRequestService {
 

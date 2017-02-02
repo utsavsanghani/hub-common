@@ -30,11 +30,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
+import com.blackducksoftware.integration.hub.model.ComponentSearchResultView;
 import com.blackducksoftware.integration.hub.request.HubPagedRequest;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 import com.blackducksoftware.integration.hub.service.HubParameterizedRequestService;
-
-import io.swagger.client.model.ComponentSearchResultView;
 
 public class ComponentRequestService extends HubParameterizedRequestService<ComponentSearchResultView> {
 	private static final List<String> COMPONENT_SEGMENTS = Arrays.asList(SEGMENT_API, SEGMENT_COMPONENTS);
