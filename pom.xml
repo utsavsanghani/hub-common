@@ -67,7 +67,7 @@
     <dependency>
       <groupId>com.blackducksoftware.integration</groupId>
       <artifactId>hub-model-common</artifactId>
-      <version>3.4.2</version>
+      <version>3.4.2.1</version>
     </dependency>
   </dependencies>
 
